@@ -6,7 +6,7 @@ https://github.com/tesseract-ocr/tesseract
 
 Django-ocr-server saves the result in the database.
 To prevent repeated recognition of the same file,
-it also saves the hash sum of the downloaded file.
+it also saves the hash sum of the uploaded file.
 Therefore, when reloading an already existing file, the result returns immediately,
 bypassing the recognition process, which significantly reduces the load on the server.
 
@@ -21,7 +21,7 @@ At the same time, he analyzes, if the PDF already contains real text,
 this text will be used and the file will not be recognized,
 which reduces the load on the server and improves the quality of the output.
 
- .. image:: django-ocr-server.png
+ .. image:: django_ocr_server.png
 
 Storage of downloaded files and created searchable PDFs can be disabled in the settings.
 
@@ -515,14 +515,14 @@ Configuration
  For changing your django_ocr_server behavior you can use
  several parameters in the settings.py of your django project.
 
-  OCR_STORE_FILES Set it to True (default) to enable storing uploaded files on the server
-  OCR_FILE_PREVIEW  Set it to True (default) to enable showing uploaded images preview in admin interface
-  OCR_TESSERACT_LANG Sets priority of using languages, default to 'rus+eng'
-  OCR_STORE_PDF Set it to True (default) to enable storing created searchable PDFs on the server
-  OCR_FILES_UPLOAD_TO Sets path for uploaded files
-  OCR_PDF_UPLOAD_TO Sets path for created searchable PDFs
-  OCR_FILES_TTL Sets time to live for uploaded files, uploaded files older this interval will be removed. Use python datetime.timedelta to set it or 0 (default) to disable.
-  OCR_PDF_TTL Sets time to live for created searchable PDFs, PDFs older this interval will be removed. Use python datetime.timedelta to set it or 0 (default) to disable.
-  OCR_TTL Sets time to live for created models of OCRedFile, models older this interval will be removed. Use python datetime.timedelta to set it or 0 (default) to disable.
+  | OCR_STORE_FILES Set it to True (default) to enable storing uploaded files on the server
+  | OCR_FILE_PREVIEW  Set it to True (default) to enable showing uploaded images preview in admin interface
+  | OCR_TESSERACT_LANG Sets priority of using languages, default to 'rus+eng'
+  | OCR_STORE_PDF Set it to True (default) to enable storing created searchable PDFs on the server
+  | OCR_FILES_UPLOAD_TO Sets path for uploaded files
+  | OCR_PDF_UPLOAD_TO Sets path for created searchable PDFs
+  | OCR_FILES_TTL Sets time to live for uploaded files, uploaded files older this interval will be removed. Use python datetime.timedelta to set it or 0 (default) to disable.
+  | OCR_PDF_TTL Sets time to live for created searchable PDFs, PDFs older this interval will be removed. Use python datetime.timedelta to set it or 0 (default) to disable.
+  | OCR_TTL Sets time to live for created models of OCRedFile, models older this interval will be removed. Use python datetime.timedelta to set it or 0 (default) to disable.
 
 
