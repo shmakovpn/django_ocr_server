@@ -1,0 +1,14 @@
+{% if widget.store_files_disabled %}
+    <span>Store files is disabled.</span>
+{% endif %}
+{% if widget.file_missing %}
+    <span>File is missing.</span>
+{% elif widget.file_removed %}
+    <span>File removed.</span>
+{% else %}
+    <a {% include "django/forms/widgets/attrs.html" %} href="{{ widget.url }}">{{ widget.filename|stringformat:'s' }}</a>
+    <input type="submit" value="Remove" name="_removefile">
+    {% if widget.file_preview %}
+        <div><img src="{{ widget.url }}" width="100" height="100" /></div>
+    {% endif %}
+{% endif %}

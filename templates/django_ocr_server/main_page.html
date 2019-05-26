@@ -1,0 +1,8 @@
+{% extends package|add:'/base.html' %}
+{% block title %}Welcome to OCR Server{% endblock %}
+{% block head %}Welcome to OCR Server{% endblock %}
+{% block home_link %}home{% endblock %}
+{% block content %}
+    <div>STORE_FILES={{ STORE_FILES }}</div>
+    <div>STORE_PDF={{ STORE_PDF }}</div>
+{% endblock %}

@@ -1,0 +1,27 @@
+<table>
+    <tr>
+        <td>
+            {% if pdf_info.pdf_num_pages %}
+                <div>nPages: {{ pdf_info.pdf_num_pages }}</div>
+            {% endif %}
+            {% if pdf_info.pdf_author %}
+                <div>Author: {{ pdf_info.pdf_author }}</div>
+            {% endif %}
+            {% if pdf_info.pdf_creation_date %}
+                <div>Created: {{ pdf_info.pdf_creation_date }}</div>
+            {% endif %}
+            {% if pdf_info.pdf_creator %}
+                <div>Creator: {{ pdf_info.pdf_creator }}</div>
+            {% endif %}
+            {% if pdf_info.pdf_mod_date %}
+                <div>Modified: {{ pdf_info.pdf_mod_date }}</div>
+            {% endif %}
+            {% if pdf_info.pdf_producer %}
+                <div>Producer: {{ pdf_info.pdf_producer }}</div>
+            {% endif %}
+            {% if pdf_info.pdf_title %}
+                <div>Title: {{ pdf_info.pdf_title }}</div>
+            {% endif %}
+        </td>
+    </tr>
+</table>

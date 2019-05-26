@@ -1,0 +1,14 @@
+db.sqlite3
+.idea/
+venv/
+# migrations/
+*.pyc
+upload/
+pdf/
+temp.py
+temp.html
+build/
+dist/
+__pycache__/
+*.egg-info/
+.eggs/

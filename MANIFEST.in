@@ -1,0 +1,3 @@
+recursive-include static *.png *.svg *.css *.js
+recursive-include templates *.html
+recursive-include tests *.pdf *.txt *.jpg *.png

@@ -1,0 +1,14 @@
+{% if widget.store_pdf_disabled %}
+    <span>Store PDF is disabled.</span>
+{% endif %}
+{% if widget.pdf_missing %}
+    <span>PDF is missing.</span>
+{% elif widget.pdf_removed %}
+    <span>PDF removed.</span>
+{% elif widget.pdf_exists %}
+    <a {% include "django/forms/widgets/attrs.html" %} href="{{ widget.url }}">{{ widget.filename|stringformat:'s' }}</a>
+    <input type="submit" value="Remove" name="_removepdf">
+{% endif %}
+{% if widget.create_pdf_button %}
+    <input type="submit" value="Create PDF" name="_createpdf">
+{% endif %}

@@ -1,0 +1,23 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>OCR Server | {% block title %}{% endblock %}</title>
+    <link rel="shortcut icon" type="image/png" href="{% static 'favicon.ico' %}"/>
+    <link rel="stylesheet" href="{% static package|add:'/style.css' %}" type="text/css" />
+    <script>
+        var url = "{% url package|add:':main_page' %}";
+    </script>
+    {% block external %}
+
+    {% endblock %}
+</head>
+<body>
+    <div id="nav">
+        {% block home_link %}<a href="{% url package|add:':main_page' %}">home</a>{% endblock %}
+    </div>
+    <h1>{% block head %}{% endblock %}</h1>
+    {% block content %}{% endblock %}
+</body>
+</html>
