@@ -108,6 +108,28 @@ Linux Mint 19 (Ubuntu bionic)
   Run server (on virtualenv django_ocr_server), than visit http://localhost:8000/
    $python manage.py runserver
 
+Linux Mint 19 (Ubuntu bionic) automatic installation
+-----------------------------------------------------
+ Clone django_ocr_server from github
+  $git clone https://github.com/shmakovpn/django_ocr_server.git
+ Run the installation script using sudo
+  $sudo {your_path}/django_ocr_server/install_ubuntu.sh
+
+ The script creates OS user named 'django_ocr_server', installs all needed packages.
+ Creates the virtual environment.
+ It installs django_ocr_server (from PyPI by default, but you can create the package from
+ cloned repository, see the topic 'Creation a distribution package' how to do this).
+ Then it creates the django project named 'ocr_server' in the home directory of 'django_ocr_server' OS user.
+ After the script changes settings.py and urls.py is placed in ~django_ocr_server/ocr_server/ocr_server/.
+ Finally it applies migrations and creates the superuser named 'admin' with the same password 'admin'.
+
+ Run server under OS user django_ocr_server, then change 'admin' password in the http://localhost:your_port/admin/ page.
+  | $sudo su
+  | $su django_ocr_server
+  | cd ~/ocr_server
+  | workon django_ocr_server
+  | python manage.py runserver
+
 Centos 7
 --------
  Install epel repository
@@ -243,6 +265,20 @@ License
     limitations under the License.
 
 **NOTE**: This software depends on other packages that may be licensed under different open source licenses.
+
+Creation a distribution package
+===============================
+ As mentioned earlier, the automatic installation script 'install_ubuntu.sh'
+ uses the package from the PyPI repository by default. To change this behavior or
+ if you need your own distribution package you can build it.
+
+ Run command
+  | $cd path to cloned project from github
+  | $python setup.py sdist
+
+ Look in 'dist' directory, there is your package was created.
+
+ Also you can continue automatic installation. The package will be used.
 
 Deploying to production
 =======================
