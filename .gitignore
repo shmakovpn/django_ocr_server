@@ -13,3 +13,6 @@ __pycache__/
 *.egg-info/
 .eggs/
 doc/html/
+_build
+_static
+_templates
