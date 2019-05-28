@@ -1,18 +1,30 @@
-db.sqlite3
 .idea/
 venv/
 # migrations/
 *.pyc
-upload/
-pdf/
+django_ocr_server/upload/
+django_ocr_server/pdf/
+
+# some temporary files
 temp.py
 temp.html
-build/
+notes
+
+#
 dist/
 __pycache__/
 *.egg-info/
 .eggs/
-doc/html/
+
+# sphinx files
+doc/build/html/
 _build
 _static
 _templates
+
+# django project files
+db.sqlite3
+ocr_server/
+
+# deployment files
+uwsgi.ini
