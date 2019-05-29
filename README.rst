@@ -89,7 +89,6 @@ Linux Mint 19 (Ubuntu bionic)
 
    from django.contrib import admin
    from django.urls import path, include
-   from django.views.generic.base import RedirectView
    from rest_framework.documentation import include_docs_urls
 
    admin.site.site_header = 'OCR Server Administration'
@@ -212,7 +211,6 @@ Centos 7
 
    from django.contrib import admin
    from django.urls import path, include
-   from django.views.generic.base import RedirectView
    from rest_framework.documentation import include_docs_urls
 
    admin.site.site_header = 'OCR Server Administration'

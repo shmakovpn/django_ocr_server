@@ -10,7 +10,8 @@ Welcome to django_ocr_server's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-
+   Introduction <introduction>
+   Installation <installation>
 
 Indices and tables
 ==================
