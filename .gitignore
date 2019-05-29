@@ -25,6 +25,7 @@ _templates
 # django project files
 db.sqlite3
 ocr_server/
+manage.py
 
 # deployment files
 uwsgi.ini

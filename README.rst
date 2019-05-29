@@ -561,4 +561,10 @@ Configuration
   | OCR_PDF_TTL Sets time to live for created searchable PDFs, PDFs older this interval will be removed. Use python datetime.timedelta to set it or 0 (default) to disable.
   | OCR_TTL Sets time to live for created models of OCRedFile, models older this interval will be removed. Use python datetime.timedelta to set it or 0 (default) to disable.
 
+Management Commands
+===================
+ Run it to clean trash. It removes all uploaded files and PDFs that do not have related models in database.
+  $python manage.py clean
 
+ Run it to remove models, uploaded files and PDFs, whose time to live (TTL) has expired.
+  $python manage.py ttl
