@@ -2,3 +2,4 @@ prune ocr_server
 recursive-include django_ocr_server/static *.png *.svg *.css *.js
 recursive-include django_ocr_server/templates *.html
 recursive-include django_ocr_server/tests *.pdf *.txt *.jpg *.png
+include LICENSE.txt
