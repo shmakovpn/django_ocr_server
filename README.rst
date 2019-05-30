@@ -460,7 +460,7 @@ Centos 7
 
 Usage examples
 ==============
- You can download all examples from https://github.com/shmakovpn/django-ocr-server/usage_examples
+ You can download all examples from https://github.com/shmakovpn/django_ocr_server/tree/master/usage_examples
 
 curl
 ----

@@ -18,6 +18,7 @@ __pycache__/
 
 # sphinx files
 doc/build/html/
+doc/build/doctrees/
 _build
 _static
 _templates
