@@ -1,3 +1,5 @@
+.. index:: Creation a distribution package
+
 Creation a distribution package
 ===============================
  As mentioned earlier, the automatic installation script 'install_ubuntu.sh'

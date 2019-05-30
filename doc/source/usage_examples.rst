@@ -1,19 +1,25 @@
+.. index:: Usage examples
+
 Usage examples
 ==============
  You can download all examples from https://github.com/shmakovpn/django_ocr_server/tree/master/usage_examples
 
+.. index:: curl usage example
+
 curl
 ----
  Use curl with '@' before the path of the uploading file
-  .. code-block::
+  .. code-block:: bash
 
    #!/usr/bin/env bash
    curl -F "file=@example.png" localhost:8000/upload/
 
+.. index:: Python usage example
+
 python
 ------
  Use requests.post function
-  .. code-block::
+  .. code-block:: python
 
    import requests
 
@@ -22,10 +28,12 @@ python
        print(requests.post("http://localhost:8000/upload/",
                            files={'file': fp}, ).content)
 
+.. index:: Perl usage example
+
 perl
 ----
  Use LWP::UserAgent and HTTP::Request::Common
-  .. code-block::
+  .. code-block:: perl
 
    #!/usr/bin/perl
    use strict;
@@ -51,10 +59,12 @@ perl
        print "Failed: ", $response->as_string;
    }
 
+.. index:: php usage example
+
 php
 ---
- Use
-  .. code-block::
+ Use CURLFile($file, $mime, $name)
+  .. code-block:: php
 
    <?php
    //Initialise the cURL var

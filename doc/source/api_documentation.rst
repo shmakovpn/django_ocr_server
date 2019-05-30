@@ -1,3 +1,5 @@
+.. index:: API documentation
+
 API documentation
 =================
  Django-ocr-server provides API documentation use restframework.documentation and swagger.

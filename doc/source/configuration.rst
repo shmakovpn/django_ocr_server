@@ -1,3 +1,14 @@
+.. index:: Configuration
+.. index:: OCR_STORE_FILES
+.. index:: OCR_FILE_PREVIEW
+.. index:: OCR_TESSERACT_LANG
+.. index:: OCR_STORE_PDF
+.. index:: OCR_FILES_UPLOAD_TO
+.. index:: OCR_PDF_UPLOAD_TO
+.. index:: OCR_FILES_TTL
+.. index:: OCR_PDF_TTL
+.. index:: OCR_TTL
+
 Configuration
 =============
  For changing your django_ocr_server behavior you can use

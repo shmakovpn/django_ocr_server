@@ -1,5 +1,11 @@
+.. index:: Installation
+
 Installation
 ============
+
+.. index:: Linux Mint 19 installation
+.. index:: Ubuntu bionic installation
+
 Linux Mint 19 (Ubuntu bionic)
 -----------------------------
   Installing packages
@@ -31,6 +37,11 @@ Linux Mint 19 (Ubuntu bionic)
    $django-admin startproject ocr_server
   Go to project directory
    $cd ocr_server
+
+  .. index:: settings.py Linux Mint 19
+
+  .. index:: settings.py Ubuntu bionic
+
   Edit ocr_server/settings.py
    Add applications to INSTALLED_APPS
 
@@ -44,6 +55,9 @@ Linux Mint 19 (Ubuntu bionic)
      'rest_framework_swagger',
     ]
 
+  .. index:: urls.py Linux Mint 19
+
+  .. index:: urls.py Ubuntu bionic
 
   Edit ocr_server/urls.py
 
@@ -69,6 +83,10 @@ Linux Mint 19 (Ubuntu bionic)
   Run server (on virtualenv django_ocr_server), than visit http://localhost:8000/
    $python manage.py runserver
 
+.. index:: Linux Mint 19 automatic installation
+
+.. index:: Ubuntu bionic automatic inatallation
+
 Linux Mint 19 (Ubuntu bionic) automatic installation
 -----------------------------------------------------
  Clone django_ocr_server from github
@@ -91,6 +109,8 @@ Linux Mint 19 (Ubuntu bionic) automatic installation
   | workon django_ocr_server
   | python manage.py runserver
 
+.. index:: Centos 7 installation
+
 Centos 7
 --------
  Install epel repository
@@ -103,6 +123,9 @@ Centos 7
   | $sudo yum install gcc-c++
  Install dependencies
   $sudo yum install poppler-cpp-devel
+
+ .. index:: Tesseract OCR Centos 7 installation
+
  Install tesseract
   | $sudo yum-config-manager --add-repo https://download.opensuse.org/repositories/home:/Alexander_Pozdnyakov/CentOS_7/
   | $sudo bash -c "echo 'gpgcheck=0' >> /etc/yum.repos.d/download.opensuse.org_repositories_home_Alexander_Pozdnyakov_CentOS_7*.repo"
@@ -119,6 +142,9 @@ Centos 7
   $sudo chown -R {your_user} /var/www/ocr_server/
  Activate virtualenv
   $source /var/www/ocr_server/venv/bin/activate
+
+ .. index:: Postgresql 11 Centos 7 installation and configuration
+
  Install postgresql 11 (The Postgresql version 9.2 that is installing in Centos 7 by default returns an error when applying migrations )
   | $sudo rpm -Uvh https://yum.postgresql.org/11/redhat/rhel-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm
   | $sudo yum install postgresql11-server
@@ -140,6 +166,8 @@ Centos 7
   | $cd /var/www/ocr_server
   | $django-admin startproject ocr_server .
 
+ .. index:: settings.py Centos 7
+
  Edit ocr_server/settings.py
    Add applications to INSTALLED_APPS
 
@@ -152,6 +180,8 @@ Centos 7
      'django_ocr_server',
      'rest_framework_swagger',
     ]
+
+   .. index:: database configuration Centos 7
 
    Configure database connection
 
@@ -167,6 +197,8 @@ Centos 7
             'PORT': '',
         }
     }
+
+ .. index:: urls.py Centos 7
 
  Edit ocr_server/urls.py
   .. code-block::

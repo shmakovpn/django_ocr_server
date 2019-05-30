@@ -1,11 +1,22 @@
+.. index:: Deploying to production
+
 Deploying to production
 =======================
+
+.. index:: Linux Mint 19 deploy to production
+.. index:: Ubuntu bionic deploy to production
+
 Linux Mint 19 (Ubuntu bionic)
 -----------------------------
  Installing nginx
   $sudo apt install nginx
  Installing uwsgi (on virtualenv django_ocr_server)
   $pip install uwsgi
+
+ .. index:: uwsgi Linux Mint 19 configuration
+
+ .. index:: uwsgi Ubuntu bionic configuration
+
  Create {path_to_your_project}/uwsgi.ini
   .. code-block::
 
@@ -17,6 +28,10 @@ Linux Mint 19 (Ubuntu bionic)
    processes = 10
    http = 127.0.0.1:8003
    vacuum = true
+
+ .. index:: nginx Linux Mint 19 configuration
+
+ .. index:: nginx Ubuntu bionic configuration
 
  Create /etc/nginx/sites-available/django_ocr_server.conf
   .. code-block::
@@ -45,6 +60,10 @@ Linux Mint 19 (Ubuntu bionic)
 
   Remove the nginx default site
    $sudo rm /etc/nginx/sites-enabled/default
+
+  .. index:: systemd service unit Linux Mint 19
+
+  .. index:: systemc service unit Ubuntu bionic
 
   Create the systemd service unit /etc/systemd/system/django-ocr-server.service
    .. code-block::
@@ -81,12 +100,17 @@ Linux Mint 19 (Ubuntu bionic)
   Go to http://{your_server}:80
    You will be redirected to admin page
 
+.. index::  Centos 7 deploy to production
+
 Centos 7
 --------
  Installing nginx
   $sudo apt install nginx
  Installing uwsgi (on virtualenv django_ocr_server)
   $pip install uwsgi
+
+ .. index:: uwsgi configuration Centos 7
+
  Create /var/www/ocr_server/uwsgi.ini
   .. code-block::
 
@@ -98,6 +122,8 @@ Centos 7
    processes = 10
    http = 127.0.0.1:8003
    vacuum = true
+
+ .. index:: systemd service unit centos 7
 
  Create the systemd service unit /etc/systemd/system/django-ocr-server.service
    .. code-block::
@@ -134,6 +160,8 @@ Centos 7
  Enable Django-ocr-server uwsgi service
   $sudo systemctl enable django-ocr-service
 
+ .. index:: nginx Centos 7 configuration
+
  Edit /etc/nginx/nginx.conf
   .. code-block::
 
@@ -157,6 +185,8 @@ Centos 7
        }
    }
 
+ .. index:: selinux Centos 7 configuration
+
  Configure selinux
   .. code-block::
 
@@ -172,6 +202,9 @@ Centos 7
   $sudo systemctl start nginx
  Enable nginx service
   $sudo systemctl enable nginx
+
+ .. index:: firewall Centos 7 configuration
+
  Configure firewall
   | $sudo firewall-cmd --zone=public --add-service=http --permanent
   | $sudo firewall-cmd --reload
