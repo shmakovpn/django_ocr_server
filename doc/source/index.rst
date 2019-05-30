@@ -9,7 +9,6 @@ Welcome to django_ocr_server's documentation!
  .. toctree::
    :hidden:
 
-   modules <modulesdoc/modules.rst>
    contents <contents>
 
  .. toctree::
