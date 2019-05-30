@@ -7,11 +7,6 @@ Welcome to django_ocr_server's documentation!
 =============================================
 
  .. toctree::
-   :hidden:
-
-   contents <contents>
-
- .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
