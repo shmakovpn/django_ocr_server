@@ -31,8 +31,8 @@ Linux Mint 19 (Ubuntu bionic)
    | $source ~/.bashrc
   Creating virtualenv for django_ocr_server
    $mkvirtualenv django_ocr_server -p /usr/bin/python3.7
-  Inslalling django-ocr-server (on virtualenv django_ocr_server). It installs Django as a dependency
-   $pip install django-ocr-server-1.0.tar.gz
+  Installing django-ocr-server (on virtualenv django_ocr_server). It installs Django as a dependency
+   $pip install django-ocr-server
   Create your Django project (on virtualenv django_ocr_server)
    $django-admin startproject ocr_server
   Go to project directory
@@ -127,9 +127,6 @@ Centos 7
  .. index:: Tesseract OCR Centos 7 installation
 
  Install tesseract
-  | $sudo yum-config-manager --add-repo https://download.opensuse.org/repositories/home:/Alexander_Pozdnyakov/CentOS_7/
-  | $sudo bash -c "echo 'gpgcheck=0' >> /etc/yum.repos.d/download.opensuse.org_repositories_home_Alexander_Pozdnyakov_CentOS_7*.repo"
-  | $sudo yum update
   | $sudo yum install tesseract
   | $sudo yum install tesseract-langpack-rus  # install a language pack you need
  Install pip
@@ -137,7 +134,7 @@ Centos 7
  Install virtualenv
   $sudo pip install virtualenv
  Create the virtual env for django_ocr_server
-  $sudo virtualenv /var/www/ocr_server/venv -p /usr/bin/python36 --distribute
+  $sudo virtualenv /var/www/ocr_server/venv -p /usr/bin/python3.6 --distribute
  Give rights to the project folder to your user
   $sudo chown -R {your_user} /var/www/ocr_server/
  Activate virtualenv
@@ -161,7 +158,9 @@ Centos 7
   | # alter database django_ocr_server owner to django_ocr_server;
   | # alter user django_ocr_server createdb;  # if you want to run tests
   | # \q
-  | pip install psycopg2  # (on virtualenv django_ocr_server)
+  | pip install psycopg2-binary  # (on virtualenv django_ocr_server)
+ Installing django-ocr-server (on virtualenv django_ocr_server). It installs Django as a dependency
+   $pip install django-ocr-server
  Create django project (on virtualenv django_ocr_server)
   | $cd /var/www/ocr_server
   | $django-admin startproject ocr_server .
