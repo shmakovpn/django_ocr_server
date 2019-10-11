@@ -153,11 +153,15 @@ Centos 7
   | $sudo systemctl enable postgresql-11
   | $sudo systemctl start postgresql-11
   | $sudo -u postgres psql
-  | # create database django_ocr_server encoding utf8;
-  | # create user django_ocr_server with password 'django_ocr_server';
-  | # alter database django_ocr_server owner to django_ocr_server;
-  | # alter user django_ocr_server createdb;  # if you want to run tests
-  | # \q
+
+     .. code-block:: postgresql
+
+      create database django_ocr_server encoding utf8;
+      create user django_ocr_server with password 'django_ocr_server';
+      alter database django_ocr_server owner to django_ocr_server;
+      alter user django_ocr_server createdb;  # if you want to run test
+      \q
+
   | pip install psycopg2-binary  # (on virtualenv django_ocr_server)
  Installing django-ocr-server (on virtualenv django_ocr_server). It installs Django as a dependency
    $pip install django-ocr-server
@@ -170,7 +174,7 @@ Centos 7
  Edit ocr_server/settings.py
    Add applications to INSTALLED_APPS
 
-   .. code-block::
+   .. code-block:: python
 
     INSTALLED_APPS = [
      ...
@@ -184,7 +188,7 @@ Centos 7
 
    Configure database connection
 
-   .. code-block::
+   .. code-block:: python
 
     DATABASES = {
         'default': {
@@ -200,7 +204,7 @@ Centos 7
  .. index:: urls.py Centos 7
 
  Edit ocr_server/urls.py
-  .. code-block::
+  .. code-block:: python
 
    from django.contrib import admin
    from django.urls import path, include
