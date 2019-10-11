@@ -166,7 +166,7 @@ Centos 7
 
   | Create the database and it's user
 
-     .. code-block:: postgresql
+     .. code-block:: sql
 
       create database django_ocr_server encoding utf8;
       create user django_ocr_server with password 'django_ocr_server';
