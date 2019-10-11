@@ -22,8 +22,8 @@ setup(
     packages=find_packages(),
     author='shmakovpn',
     author_email='shmakovpn@yandex.ru',
-    url='https://github.com/shmakovpn/django-ocr-server',
-    download_url='https://github.com/shmakovpn/django_ocr_server/archive/1.1.zip',
+    url='https://github.com/shmakovpn/django_ocr_server',
+    download_url='https://github.com/shmakovpn/django_ocr_server/archive/'+django_ocr_server.__version__+'.zip',
     # desctiption='Django OCR Server',
     long_description=long_description,
     entry_points={
