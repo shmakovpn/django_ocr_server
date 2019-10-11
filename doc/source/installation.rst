@@ -143,26 +143,43 @@ Centos 7
  .. index:: Postgresql 11 Centos 7 installation and configuration
 
  Install postgresql 11 (The Postgresql version 9.2 that is installing in Centos 7 by default returns an error when applying migrations )
-  | $sudo rpm -Uvh https://yum.postgresql.org/11/redhat/rhel-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm
-  | $sudo yum install postgresql11-server
-  | $sudo yum install postgresql-devel
-  | $sudo /usr/pgsql-11/bin/postgresql-11-setup initdb
+
+  .. code-block:: bash
+
+   sudo rpm -Uvh https://yum.postgresql.org/11/redhat/rhel-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm
+   sudo yum install postgresql11-server
+   sudo yum install postgresql-devel
+   sudo /usr/pgsql-11/bin/postgresql-11-setup initdb
+
   | Edit /var/lib/pgsql/11/data/pg_hba.conf
-  |  host    all             all             127.0.0.1/32            md5
-  |  host    all             all             ::1/128                 md5
-  | $sudo systemctl enable postgresql-11
-  | $sudo systemctl start postgresql-11
-  | $sudo -u postgres psql
+
+    .. code-block:: text
+
+     host    all             all             127.0.0.1/32            md5
+     host    all             all             ::1/128                 md5
+
+   .. code-block:: bash
+
+    sudo systemctl enable postgresql-11
+    sudo systemctl start postgresql-11
+    sudo -u postgres psql
+
+  | Create the database and it's user
 
      .. code-block:: postgresql
 
       create database django_ocr_server encoding utf8;
       create user django_ocr_server with password 'django_ocr_server';
       alter database django_ocr_server owner to django_ocr_server;
-      alter user django_ocr_server createdb;  # if you want to run test
+      alter user django_ocr_server createdb;  -- if you want to run test
       \q
 
-  | pip install psycopg2-binary  # (on virtualenv django_ocr_server)
+  | Install python postgres database driver
+
+   .. code-block:: bash
+
+    pip install psycopg2-binary  # (on virtualenv django_ocr_server)
+
  Installing django-ocr-server (on virtualenv django_ocr_server). It installs Django as a dependency
    $pip install django-ocr-server
  Create django project (on virtualenv django_ocr_server)
