@@ -218,6 +218,7 @@ Centos 7
    sudo semanage fcontext -a -t httpd_sys_content_t '/var/www/ocr_server/venv/lib/python3.6/site-packages/django/contrib/admin/static/admin(/.*)?'
    find /var/www/ocr_server/venv/lib/python3.6/site-packages/ | grep '\.so' | grep -v '\.libs' | xargs -L1 sudo semanage fcontext -a -t httpd_sys_script_exec_t
    sudo semanage fcontext -a -t httpd_sys_script_exec_t '/var/www/ocr_server/venv/bin(/.*)?'
+   sudo semanage fcontext -a -t httpd_sys_script_exec_t '/var/www/ocr_server/venv/lib/python3.6/site-packages/psycopg2/.libs(/.*)?'
    sudo semanage fcontext -a -t httpd_sys_rw_content_t '/var/www/ocr_server/django_ocr_server/upload(/.*)?'
    sudo semanage fcontext -a -t httpd_sys_rw_content_t '/var/www/ocr_server/django_ocr_server/pdf(/.*)?'
    sudo semanage fcontext -a -t httpd_sys_rw_content_t '/var/www/ocr_server/tmp(./*)?'

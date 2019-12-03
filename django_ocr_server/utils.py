@@ -15,7 +15,7 @@ import regex
 from io import BytesIO  # for conversion a pdf content represented as bytes to an inmemory pdf file
 import pdftotext  # needed to extraction text from pdf
 import PyPDF2  # needed to get pdfInfo
-# from datetime import datetime
+from datetime import datetime
 from .settings import TESSERACT_LANG as default_tesseract_lang
 from django.conf import settings
 
@@ -97,14 +97,25 @@ def pdf_info(pdf_content):
                    + ':' + pdf_datetime_str[12:14] \
                    + '+' + pdf_datetime_str[15:17] \
                    + pdf_datetime_str[18:20]
+        # like '2019-01-28 04:14:58+'
+        match_ob = re.match(r"^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}", pdf_datetime_str)
+        if match_ob:
+            return pdf_datetime_str[0:4] \
+                   + '-' + pdf_datetime_str[5:7] \
+                   + '-' + pdf_datetime_str[8:10] \
+                   + '-' + pdf_datetime_str[11:13] \
+                   + '-' + pdf_datetime_str[14:16] \
+                   + '-' + pdf_datetime_str[17:19]
         # otherwise
-        return pdf_datetime_str[2:6] \
-               + '-' + pdf_datetime_str[6:8] \
-               + '-' + pdf_datetime_str[8:10] \
-               + ' ' + pdf_datetime_str[10:12] \
-               + ':' + pdf_datetime_str[12:14] \
-               + ':' + pdf_datetime_str[14:16] \
-               + '+' + pdf_datetime_str[17:19]
+        today = datetime.now()
+        return f"{today.year}-{today.month}-00 00:00:00"
+        # return pdf_datetime_str[2:6] \
+        #        + '-' + pdf_datetime_str[6:8] \
+        #        + '-' + pdf_datetime_str[8:10] \
+        #        + ' ' + pdf_datetime_str[10:12] \
+        #        + ':' + pdf_datetime_str[12:14] \
+        #        + ':' + pdf_datetime_str[14:16] \
+        #        + '+' + pdf_datetime_str[17:19]
 
     pdf_reader = PyPDF2.PdfFileReader(BytesIO(pdf_content))
     info = pdf_reader.getDocumentInfo()
