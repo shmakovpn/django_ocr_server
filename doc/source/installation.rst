@@ -115,18 +115,31 @@ Centos 7
 --------
  Install epel repository
   $sudo yum install epel-release
+ Install yum-utils
+  $sudo yum install yum-utils
+ Install ghostscipt (Interpreter for PostScript language & PDF needed for ocrmypdf)
+  $sudo yum install ghostscript
+ Install wget (A utility for retrieving files using the HTTP or FTP protocols for download qpdf that needed for ocrmypdf)
+  $sudo yum install wget
+ Install qpdf
+  | cd /usr/local/src
+  | wget https://github.com/qpdf/qpdf/releases/download/release-qpdf-9.1.0/qpdf-9.1.0.tar.gz
+  | TODO
  Install python 3.6
   | $sudo yum install python36
   | $sudo yum install python36-devel
  Install gcc
   | $sudo yum intall gcc
   | $sudo yum install gcc-c++
- Install dependencies
+ Install poppler-cpp-devel (Development files for C++ wrapper for building pdftotext)
   $sudo yum install poppler-cpp-devel
 
  .. index:: Tesseract OCR Centos 7 installation
 
  Install tesseract
+  | $sudo yum-config-manager --add-repo https://download.opensuse.org/repositories/home:/Alexander_Pozdnyakov/CentOS_7/
+  | $sudo bash -c "echo 'gpgcheck=0' >> /etc/yum.repos.d/download.opensuse.org_repositories_home_Alexander_Pozdnyakov_CentOS_7*.repo"
+  | $sudo yum update
   | $sudo yum install tesseract
   | $sudo yum install tesseract-langpack-rus  # install a language pack you need
  Install pip
@@ -171,7 +184,7 @@ Centos 7
       create database django_ocr_server encoding utf8;
       create user django_ocr_server with password 'django_ocr_server';
       alter database django_ocr_server owner to django_ocr_server;
-      alter user django_ocr_server createdb;  -- if you want to run test
+      alter user django_ocr_server createdb;  -- if you want to run tests
       \q
 
   | Install python postgres database driver

@@ -17,11 +17,8 @@ from .forms import *
 def remove_selected(modeladmin, request, queryset):
     if not modeladmin.has_delete_permission(request):
         raise PermissionDenied
-    if request.POST.get('post'):
-        for obj in queryset:
-            obj.delete()
-    else:
-        return delete_selected_(modeladmin, request, queryset)
+    for obj in queryset:
+        obj.delete()
 
 
 remove_selected.short_description = "Delete selected objects"
@@ -69,9 +66,12 @@ def filefield_to_listdisplay(obj):
         return 'NO FILE'
     elif 'file_removed' in obj.file.name:
         return 'REMOVED'
-    return format_html('<a href="/{}" target="_blank">{}</a><a class="button" href="{}">Remove</a>',
-                       obj.file.name,
-                       obj.file.name,
+    filename = os.path.basename(obj.file.name)
+    return format_html('<a href="{}" target="_blank">{}</a><a class="button" href="{}">Remove</a>',
+                       reverse(f"{__package__}:download", kwargs={
+                           'download_target': 'file', 'filename': filename
+                       }),
+                       filename,
                        reverse('admin:ocredfile-file-remove', args=[obj.pk])
                        )
 
@@ -93,11 +93,14 @@ def pdffield_to_listdisplay(obj):
     elif 'pdf_removed' in obj.ocred_pdf.name:
         out = 'REMOVED'
     else:
-        return format_html('<a href="/{}" target="_blank">{}</a><a class="button" href="{}">Remove</a>',
-                       obj.ocred_pdf.name,
-                       obj.ocred_pdf.name,
-                       reverse('admin:ocredfile-ocred_pdf-remove', args=[obj.pk])
-                       )
+        filename = os.path.basename(obj.ocred_pdf.name)
+        return format_html('<a href="{}" target="_blank">{}</a><a class="button" href="{}">Remove</a>',
+                           reverse(f"{__package__}:download", kwargs={
+                               'download_target': 'pdf', 'filename': filename
+                           }),
+                           filename,
+                           reverse('admin:ocredfile-ocred_pdf-remove', args=[obj.pk])
+                           )
     if obj.can_create_pdf:
         return format_html('{}<a class="button" href="{}">Create</a>',
                            out,

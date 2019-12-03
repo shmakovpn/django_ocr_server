@@ -16,17 +16,41 @@ from django.utils.translation import gettext_lazy as _
 from .exceptions import *
 
 
+def get_file_upload_to():
+    """
+    This function returns the absolute path to the folder for uploading files
+    2019-10-22
+    :return: the absolute path to the folder for uploading files
+    """
+    files_upload_to = getattr(settings, 'OCR_FILES_UPLOAD_TO', ocr_default_settings.FILES_UPLOAD_TO)
+    if not os.path.isabs(files_upload_to):
+        files_upload_to = os.path.join(settings.BASE_DIR, files_upload_to)
+    return files_upload_to
+
+
+def get_pdf_upload_to():
+    """
+    This function returns the absolute path to the folder for uploading PDFs
+    2019-10-22
+    :return: the absolute path to the folder for uploading PDFs
+    """
+    pdf_upload_to = getattr(settings, 'OCR_PDF_UPLOAD_TO', ocr_default_settings.PDF_UPLOAD_TO)
+    if not os.path.isabs(pdf_upload_to):
+        pdf_upload_to = os.path.join(settings.BASE_DIR, pdf_upload_to)
+    return pdf_upload_to
+
+
 def set_ocredfile_name(instance, filename=None):
     """
     This function returns a filename for OCRedFile.file 2019-03-18
     :param instance: an instance of the OCRedFile model
     :param filename: a name of a uploaded file
     :return: a filename for OCRedFile.file
+    2019-10-22
     """
-    upload_to = getattr(settings, 'OCR_FILES_UPLOAD_TO', ocr_default_settings.FILES_UPLOAD_TO)
     if not getattr(settings, 'OCR_STORE_FILES', ocr_default_settings.STORE_FILES):
         filename = getattr(settings, 'OCR_STORE_FILES_DISABLED_LABEL', ocr_default_settings.STORE_FILES_DISABLED_LABEL)
-    return upload_to + filename
+    return os.path.join(get_file_upload_to(), filename)
 
 
 def set_pdffile_name(instance, filename=None):
@@ -35,8 +59,8 @@ def set_pdffile_name(instance, filename=None):
     :param instance: an instance of the OCRedFile model
     :param filename: boolean if False 'store_pdf_disabled' will not use as ocred_pdf.file.name
     :return: a filename for OCRedFile.ocred_pdf
+    2019-10-22
     """
-    upload_to = getattr(settings, 'OCR_PDF_UPLOAD_TO', ocr_default_settings.PDF_UPLOAD_TO)
     if not filename and not getattr(settings, 'OCR_STORE_PDF', ocr_default_settings.STORE_PDF):
         filename = getattr(settings, 'OCR_STORE_PDF_DISABLED_LABEL', ocr_default_settings.STORE_PDF_DISABLED_LABEL)
         if instance.md5:
@@ -45,7 +69,7 @@ def set_pdffile_name(instance, filename=None):
         filename = instance.md5
     else:
         filename = instance.file.name
-    return upload_to + filename + '.pdf'
+    return os.path.join(get_pdf_upload_to(), f"{filename}.pdf")
 
 
 # Create your models here.

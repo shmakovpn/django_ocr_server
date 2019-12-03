@@ -60,7 +60,9 @@ class FileLink(LinkWidget):
         else:
             context['widget']['filename'] = os.path.basename(str(value))
             context['widget']['url'] = reverse(__package__ + ':download',
-                                               kwargs={'download_target': 'file', 'filename': context['widget']['filename']})
+                                               kwargs={
+                                                   'download_target': 'file', 'filename': context['widget']['filename']
+                                               })
         return context
 
 
@@ -109,7 +111,9 @@ class PdfLink(LinkWidget):
         else:
             context['widget']['filename'] = os.path.basename(str(value))
             context['widget']['url'] = reverse(__package__ + ':download',
-                                               kwargs={'download_target': 'pdf', 'filename': context['widget']['filename']})
+                                               kwargs={
+                                                   'download_target': 'pdf', 'filename': context['widget']['filename']
+                                               })
             context['widget']['pdf_exists'] = True
         return context
 

@@ -29,8 +29,28 @@ ALLOWED_FILE_TYPES = (
     'image/tiff',
 )
 
+"""
+2019-10-22 shmakovpn. An error was found when trying to delpoy Django-OCR_Server using Apache
+because usage of relative paths is a wrong way when Apache mod_wsgi is using
+https://modwsgi.readthedocs.io/en/develop/user-guides/application-issues.html#application-working-directory
+
 FILES_UPLOAD_TO = __package__ + '/upload/'  # directory for saving uploaded files
 PDF_UPLOAD_TO = __package__ + '/pdf/'  # directory for created searchable PDFs
+"""
+FILES_UPLOAD_TO = os.path.join(
+    settings.BASE_DIR,
+    __package__,
+    'upload'
+)
+
+PDF_UPLOAD_TO = os.path.join(
+    settings.BASE_DIR,
+    __package__,
+    'pdf'
+)
+
+# print(f"Debug: FILES_UPLOAD_TO={FILES_UPLOAD_TO}")
+# print(f"Debug. PDF_UPLOAD_TO={PDF_UPLOAD_TO}")
 
 """
 TimeToLive settings
@@ -47,10 +67,19 @@ TTL = 0
 """
 Creates folders for storing uploaded files and ocred pdfs if these do not exist
 """
+"""
+2019-10-22 shmakovpn
 files_upload_to = os.path.join(settings.BASE_DIR,
                                getattr(settings, 'OCR_FILES_UPLOAD_TO', FILES_UPLOAD_TO))
 pdf_upload_to = os.path.join(settings.BASE_DIR,
                              getattr(settings, 'OCR_PDF_UPLOAD_TO', PDF_UPLOAD_TO))
+"""
+files_upload_to = getattr(settings, 'OCR_FILES_UPLOAD_TO', FILES_UPLOAD_TO)
+if not os.path.isabs(files_upload_to):
+    files_upload_to = os.path.join(settings.BASE_DIR, files_upload_to)
+pdf_upload_to = getattr(settings, 'OCR_PDF_UPLOAD_TO', PDF_UPLOAD_TO)
+if not os.path.isabs(pdf_upload_to):
+    pdf_upload_to = os.path.join(settings.BASE_DIR, pdf_upload_to)
 if not os.path.isdir(files_upload_to):
     pathlib.Path(files_upload_to).mkdir(parents=True, exist_ok=True)
 if not os.path.isdir(pdf_upload_to):

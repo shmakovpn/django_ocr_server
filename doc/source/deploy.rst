@@ -187,16 +187,41 @@ Centos 7
 
  .. index:: selinux Centos 7 configuration
 
- Configure selinux
-  .. code-block::
+ Configure SELinux
+  | Django has a bug (https://code.djangoproject.com/ticket/29027#no1)
+  | By default it stores uploading files size more than 2,5Mb to /tmp folder. A temp file gets
+    'system_u:object_r:httpd_tmp_t:s0' SELinux context. Then Django tries to copy this file
+    to the uploading folder with its SELinux context using os.setxattr() from lib/python3.6/shutil.py.
+    But it is a wrong behavior because in the uploading folder the SELinux context of a file
+    have to be 'http_sys_rw_content_t'. To solve the problem we have to create another folder for
+    temp files with 'http_sys_rw_content_t' for example /var/www/ocr_server/tmp. Then configure Django
+    to store temp files to this folder.
 
-   $sudo semanage port -a -t http_port_t -p tcp 8003
-   $sudo semanage fcontext -a -t httpd_sys_content_t '/var/www/ocr_server/venv/lib/python3.6/site-packages/rest_framework_swagger/static/rest_framework_swagger(/.*)?'
-   $sudo restorecon -Rv '/var/www/ocr_server/venv/lib/python3.6/site-packages/rest_framework_swagger/static/rest_framework_swagger/'
-   $sudo semanage fcontext -a -t httpd_sys_content_t '/var/www/ocr_server/venv/lib/python3.6/site-packages/rest_framework/static/rest_framework(/.*)?'
-   $sudo restorecon -Rv '/var/www/ocr_server/venv/lib/python3.6/site-packages/rest_framework/static/rest_framework/'
-   $sudo semanage fcontext -a -t httpd_sys_content_t '/var/www/ocr_server/venv/lib/python3.6/site-packages/django/contrib/admin/static/admin(/.*)?'
-   $sudo restorecon -Rv '/var/www/ocr_server/venv/lib/python3.6/site-packages/django/contrib/admin/static/admin/'
+  .. code-block:: bash
+
+   sudo mkdir /var/www/ocr_server/tmp
+   sudo chown {your_user} /var/www/ocr_server/tmp
+
+  Change /var/www/ocr_server/ocr_server/settings.py
+
+  .. code-block:: python
+
+   FILE_UPLOAD_TEMP_DIR = os.path.join(BASE_DIR, 'tmp')
+
+  Configure SELinux contexts
+
+  .. code-block:: bash
+
+   sudo semanage port -a -t http_port_t -p tcp 8003
+   sudo semanage fcontext -a -t httpd_sys_content_t '/var/www/ocr_server/venv/lib/python3.6/site-packages/rest_framework_swagger/static/rest_framework_swagger(/.*)?'
+   sudo semanage fcontext -a -t httpd_sys_content_t '/var/www/ocr_server/venv/lib/python3.6/site-packages/rest_framework/static/rest_framework(/.*)?'
+   sudo semanage fcontext -a -t httpd_sys_content_t '/var/www/ocr_server/venv/lib/python3.6/site-packages/django/contrib/admin/static/admin(/.*)?'
+   find /var/www/ocr_server/venv/lib/python3.6/site-packages/ | grep '\.so' | grep -v '\.libs' | xargs -L1 sudo semanage fcontext -a -t httpd_sys_script_exec_t
+   sudo semanage fcontext -a -t httpd_sys_script_exec_t '/var/www/ocr_server/venv/bin(/.*)?'
+   sudo semanage fcontext -a -t httpd_sys_rw_content_t '/var/www/ocr_server/django_ocr_server/upload(/.*)?'
+   sudo semanage fcontext -a -t httpd_sys_rw_content_t '/var/www/ocr_server/django_ocr_server/pdf(/.*)?'
+   sudo semanage fcontext -a -t httpd_sys_rw_content_t '/var/www/ocr_server/tmp(./*)?'
+   sudo restorecon -Rv /var/www/ocr_server
 
  Start nginx service
   $sudo systemctl start nginx
