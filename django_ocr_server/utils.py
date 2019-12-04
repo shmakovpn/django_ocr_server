@@ -107,8 +107,9 @@ def pdf_info(pdf_content):
                    + '-' + pdf_datetime_str[14:16] \
                    + '-' + pdf_datetime_str[17:19]
         # otherwise
+        print(f"could not parse pdf_date_time: '{pdf_datetime_str}', using now() instead")
         today = datetime.now()
-        return f"{today.year}-{today.month}-00 00:00:00"
+        return f"{today.date()} {today.time()}"
         # return pdf_datetime_str[2:6] \
         #        + '-' + pdf_datetime_str[6:8] \
         #        + '-' + pdf_datetime_str[8:10] \
@@ -117,21 +118,25 @@ def pdf_info(pdf_content):
         #        + ':' + pdf_datetime_str[14:16] \
         #        + '+' + pdf_datetime_str[17:19]
 
-    pdf_reader = PyPDF2.PdfFileReader(BytesIO(pdf_content))
-    info = pdf_reader.getDocumentInfo()
-    info_out = {'Author': '', 'CreationDate': '', 'Creator': '', 'ModDate': '', 'Producer': '', 'Title': '', 'numPages': pdf_reader.numPages}
-    if '/Author' in info:
-        info_out['Author'] = info['/Author']
-    if '/CreationDate' in info:
-        info_out['CreationDate'] = parse_pdf_datetime(info['/CreationDate'])
-    if '/Creator' in info:
-        info_out['Creator'] = info['/Creator']
-    if '/ModDate' in info:
-        info_out['ModDate'] = parse_pdf_datetime(info['/ModDate'])
-    if '/Producer' in info:
-        info_out['Producer'] = info['/Producer']
-    if '/Title' in info:
-        info_out['Title'] = info['/Title']
+    info_out = {'Author': '', 'CreationDate': '', 'Creator': '', 'ModDate': '', 'Producer': '', 'Title': '', 'numPages': 0}
+    try:
+        pdf_reader = PyPDF2.PdfFileReader(BytesIO(pdf_content))
+        info = pdf_reader.getDocumentInfo()
+        info_out = {'Author': '', 'CreationDate': '', 'Creator': '', 'ModDate': '', 'Producer': '', 'Title': '', 'numPages': pdf_reader.numPages}
+        if '/Author' in info:
+            info_out['Author'] = info['/Author']
+        if '/CreationDate' in info:
+            info_out['CreationDate'] = parse_pdf_datetime(info['/CreationDate'])
+        if '/Creator' in info:
+            info_out['Creator'] = info['/Creator']
+        if '/ModDate' in info:
+            info_out['ModDate'] = parse_pdf_datetime(info['/ModDate'])
+        if '/Producer' in info:
+            info_out['Producer'] = info['/Producer']
+        if '/Title' in info:
+            info_out['Title'] = info['/Title']
+    except Exception as e:
+        print("PyPDF2.PdfFileReader exception: "+str(e))
     return info_out
 
 

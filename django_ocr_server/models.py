@@ -14,6 +14,7 @@ from .utils import md5, pdf2text, ocr_img2pdf, pdf_info, pdf_need_ocr, ocr_pdf, 
 from io import BytesIO
 from django.utils.translation import gettext_lazy as _
 from .exceptions import *
+from django.db import connection
 
 
 def get_file_upload_to():
@@ -397,7 +398,7 @@ class OCRedFile(models.Model):
         OCRedFile.is_valid_ocr_md5(md5_value=self.md5, raise_exception=True)
         # extract of ocr a content of the 'file' field if 'text' does not exist
         if not self.text:
-            print('OCRedFile->save start OCR')
+            print('OCRedFile->save start OCR' + self.md5)
             if 'image' in self.file_type:
                 pdf_content = ocr_img2pdf(content)
                 self.text = pdf2text(pdf_content)
@@ -423,7 +424,7 @@ class OCRedFile(models.Model):
                 pdf_text = pdf2text(content)
                 # check that loaded PDF file contains text
                 if pdf_need_ocr(pdf_text):
-                    print('OCRedFile PDF OCR processing via OCRmyPDF')
+                    print('OCRedFile PDF OCR processing via OCRmyPDF' + self.md5)
                     filename = set_pdffile_name(self)
                     self.text = ocr_pdf(content, filename)
                     self.ocred = timezone.now()  # save datetime when uploaded PDF was ocred
@@ -438,11 +439,14 @@ class OCRedFile(models.Model):
                         # remove created by ocr_pdf(content, filename) pdf file
                         if os.path.isfile(filename):
                             os.remove(filename)
-                    print('OCRedFile PDF OCR finished')
                 else:
-                    print('OCRedFile->save use text from loaded pdf')
+                    print('OCRedFile->save use text from loaded pdf' + self.md5)
                     self.text = pdf_text
-            print('OCRedFile->save finished OCR: ')
+            print('OCRedFile->save finished OCR' + self.md5)
+        try:
+            connection.connect()
+        except Exception as e:
+            print('reconnection exception '+self.md5+': '+str(e))
         super(OCRedFile, self).save(force_insert=False, force_update=False, using=None, update_fields=None)
         if not getattr(settings, 'OCR_STORE_FILES', ocr_default_settings.STORE_FILES):
             os.remove(self.file.path)

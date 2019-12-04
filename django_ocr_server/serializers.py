@@ -41,8 +41,8 @@ class OCRedFileSerializer(serializers.ModelSerializer):
         if not OCRedFile.is_valid_file_type(file_type=file_type, raise_exception=raise_exception):
             return False
         md5_value = md5(content)
-        print('OCRedFileSerializer.is_valid md5='+md5_value)
         if not OCRedFile.is_valid_ocr_md5(md5_value=md5_value, raise_exception=raise_exception):
+            print('OCRedFileSerializer.is_valid md5=' + md5_value + ' failed')
             return False
         return super(OCRedFileSerializer, self).is_valid(raise_exception)
 
