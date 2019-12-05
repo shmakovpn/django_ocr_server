@@ -70,6 +70,7 @@ class UploadFile(OcrApiView):
             ocred_file_serializer.is_valid(raise_exception=True)
         except (Md5DuplicationError, Md5PdfDuplicationError) as e:
             ocred_file = OCRedFile.objects.get(Q(md5=e.md5) | Q(ocred_pdf_md5=e.md5))
+            print(f"OCRed file already exists '{e.md5}'")
             ocred_file_serializer = OCRedFileSerializer(ocred_file, many=False)
             data = ocred_file_serializer.data
             return Response({

@@ -75,7 +75,8 @@ def pdf_info(pdf_content):
         :return: datetime of the pdf document creation date
         """
         # parse datetime like 'D:20190122061133Z'
-        match_ob = re.match(r'^D\:(\d{14})Z$', pdf_datetime_str)
+        # parse datetime like 'D:20190122061133'
+        match_ob = re.match(r'^D\:(\d{14})Z?$', pdf_datetime_str)
         if match_ob:
             pdf_datetime_str = match_ob[1]
         # parse datetime like 20190122061133
