@@ -223,6 +223,7 @@ Centos 7
    sudo semanage fcontext -a -t httpd_sys_rw_content_t '/var/www/ocr_server/django_ocr_server/pdf(/.*)?'
    sudo semanage fcontext -a -t httpd_sys_rw_content_t '/var/www/ocr_server/tmp(./*)?'
    sudo restorecon -Rv /var/www/ocr_server
+   sudo setsebool -P httpd_can_network_connect_db 1
 
  Start nginx service
   $sudo systemctl start nginx
