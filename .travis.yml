@@ -1,5 +1,9 @@
 language: python
 sudo: false
+addons:
+  apt:
+    packages:
+      - libpoppler-cpp-dev
 jobs:
   include:
     - name: "Python 3.7 on Linux"
