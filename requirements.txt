@@ -5,5 +5,5 @@ pdftotext
 pytesseract
 ocrmypdf
 djangorestframework
-beautifulsoup
+beautifulsoupa4
 django-rest-swagger
