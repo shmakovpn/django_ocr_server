@@ -219,12 +219,12 @@ class TestiUtils(TestCase):
         """The testing cmd_stdin(args: List[str], stdin: bytes)"""
         cmd: List[str] = ['cat', '-']
         stdin: bytes = 'hello'.encode()
-        result: str = _u.cmd_stdin(cmd, stdin)
+        result: str = _u.cmd_stdin(cmd, stdin).decode()
         self.assertEqual(result, 'hello')
         
         not_cmd: List[str] = ['nocmdabracadabra']
         try:
-            not_result: str = _u.cmd_stdin(not_cmd, stdin=stdin)
+            not_result: str = _u.cmd_stdin(not_cmd, stdin=stdin).decode()
             self.assertNone(f'Execution of "{not_cmd[0]}" does not rised an exception')
         except FileNotFoundError:
             pass
@@ -253,6 +253,16 @@ class TestiUtils(TestCase):
         test_eng_png_content: bytes = _u.read_binary_file(test_eng_png)
         test_eng_ocred_text: str = _u.ocr_img2str(test_eng_png_content)
         self.assertTrue(test_eng_ocred_text, 'A some english text to test Tesseract')
+    
+    def test_ocr_img2pdf(self):
+        """The testing ocr_img2pdf(stdin: bytes)"""
+        tests_dir: str = os.path.dirname(os.path.dirname(__file__))
+        test_eng_png: str = os.path.join(tests_dir, 'test_eng.png')
+        test_eng_png_content: bytes = _u.read_binary_file(test_eng_png)
+        test_eng_ocred_pdf: bytes = _u.ocr_img2pdf(test_eng_png_content)
+        self.assertIsNotNone(test_eng_ocred_pdf)
+        test_eng_ocred_pdf_text: str = _u.pdf2text(test_eng_ocred_pdf)
+        self.assertEqual(test_eng_ocred_pdf_text, 'A some english text to test Tesseract')
 
     def test_ocrmypdf_error_patterns(self):
         """Testing an array of templates to find the error of unmet library dependencies"""

@@ -11,7 +11,7 @@ import re
 import hashlib  # needed to md5 hash calculation
 import subprocess  # needed to run tesseract
 import re
-from typing import List, Pattern
+from typing import List, Optional, Pattern, Union
 import regex
 from io import BytesIO  # for conversion a pdf content represented as bytes to an inmemory pdf file
 import pdftotext  # needed to extraction text from pdf
@@ -174,7 +174,7 @@ def get_pdf_info(pdf_content: bytes) -> PdfInfo:
     )  # reading PdfInfo was failed, return an empty (stub) object
 
 
-def cmd_stdin(args: List[str], stdin: bytes) -> str:
+def cmd_stdin(args: List[str], stdin: bytes) -> bytes:
     """
     Launches command using *args* and send *stdin* to its standard input.
     2019-03-10/2020-01-13
@@ -184,7 +184,7 @@ def cmd_stdin(args: List[str], stdin: bytes) -> str:
                                                stderr=subprocess.PIPE,
                                                stdin=subprocess.PIPE)
     stdout, _ = popen.communicate(input=stdin)
-    return stdout.decode()
+    return stdout
 
 
 TESSERACT_STRARG: List[str] = [
@@ -201,10 +201,10 @@ def ocr_img2str(stdin: bytes) -> str:
     """
     Recognize image from 'stdin' to string 2019-03-10 *4597#
     """
-    return cmd_stdin(TESSERACT_STRARG, stdin)
+    return cmd_stdin(TESSERACT_STRARG, stdin).decode()
 
 
-def ocr_img2pdf(stdin):
+def ocr_img2pdf(stdin: bytes) -> bytes:
     """
     It recognize image from 'stdin' to pdf 2019-03-10
     :param stdin: image as bytes
