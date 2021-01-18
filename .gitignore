@@ -36,6 +36,7 @@ uwsgi.ini
 
 # codecov
 .coverage
+coverage/
 
 # nodejs
 node_modules/
