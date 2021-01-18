@@ -30,3 +30,12 @@ manage.py
 
 # deployment files
 uwsgi.ini
+
+# Visual Studio code
+.vscode/
+
+# codecov
+.coverage
+
+# nodejs
+node_modules/

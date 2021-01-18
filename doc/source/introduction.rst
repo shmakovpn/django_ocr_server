@@ -23,7 +23,7 @@ At the same time, he analyzes, if the PDF already contains real text,
 this text will be used and the file will not be recognized,
 which reduces the load on the server and improves the quality of the output.
 
- .. image:: django_ocr_server.png
+.. image:: django_ocr_server.png
 
 Storage of downloaded files and created searchable PDFs can be disabled in the settings.
 

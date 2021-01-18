@@ -26,7 +26,7 @@ from . import settings as ocr_default_settings
 # rest framework
 from rest_framework.authtoken.models import Token
 from rest_framework.test import APITestCase, APIRequestFactory
-from rest_framework.test import APIClient   # Client to perform test requests to API views
+from rest_framework.test import APIClient  # Client to perform test requests to API views
 
 # models
 from django.contrib.auth.models import User
@@ -35,7 +35,9 @@ from django.contrib.auth.models import User
 from .apiviews import *
 
 PWD = os.path.dirname(os.path.realpath(__file__))
-TESTS_DIR = "%s/%s/" % (PWD, 'tests')  # directory of the tests of the django-ocr-server/ocr application
+TESTS_DIR = "%s/%s/" % (
+    PWD, 'tests'
+)  # directory of the tests of the django-ocr-server/ocr application
 
 
 class OcrClientBase:
@@ -47,7 +49,8 @@ class OcrClientBase:
     user_counter = 0  # static
 
     def _init_user(self):
-        self.user = User.objects.create_user(username='test-{}-{}'.format(self.__class__.__name__, OcrClientBase.user_counter))
+        self.user = User.objects.create_user(username='test-{}-{}'.format(
+            self.__class__.__name__, OcrClientBase.user_counter))
         OcrClientBase.user_counter += 1
         self.token = Token.objects.create(user=self.user)
 
@@ -116,7 +119,8 @@ class OcrTestCaseBase(TestCase):
         This function starts after each test. Collects trash 2019-03-29
         :return: None
         """
-        self._clean()  # Cleans folders ocr/upload/ and ocr/pdf from trash remaining after tests
+        self._clean(
+        )  # Cleans folders ocr/upload/ and ocr/pdf from trash remaining after tests
 
     @staticmethod
     def createOCRedFile(filename, file_type):
@@ -129,11 +133,18 @@ class OcrTestCaseBase(TestCase):
         content = read_binary_file(TESTS_DIR + filename)
         ocred_file = OCRedFile()
         ocred_file.file_type = file_type
-        ocred_file.file.save(name=filename, content=BytesIO(content), save=False)
+        ocred_file.file.save(name=filename,
+                             content=BytesIO(content),
+                             save=False)
         ocred_file.save()
         return ocred_file
 
-    def assertOCRedFile(self, ocred_file, md5=None, text=None, ):
+    def assertOCRedFile(
+        self,
+        ocred_file,
+        md5=None,
+        text=None,
+    ):
         """
         Assert that the ocred_file is not None,
         the ocred_file.id is not None,
@@ -155,22 +166,29 @@ class OcrTestCaseBase(TestCase):
         self.assertTrue(bool(ocred_file), 'The ocred_file is None')
         self.assertTrue(bool(ocred_file.id), 'The ocred_file does not have id')
         if md5:
-            self.assertEqual(md5, ocred_file.md5, "The ocred_file.md5 '{}' does not equal md5 '{}'."
-                             .format(ocred_file.md5, md5))
+            self.assertEqual(
+                md5, ocred_file.md5,
+                "The ocred_file.md5 '{}' does not equal md5 '{}'.".format(
+                    ocred_file.md5, md5))
         if text:
-            self.assertIn(text, ocred_file.text, "The ocred_file.text '{}' does not contain text '{}'."
-                          .format(ocred_file.text, text))
+            self.assertIn(
+                text, ocred_file.text,
+                "The ocred_file.text '{}' does not contain text '{}'.".format(
+                    ocred_file.text, text))
         self.assertTrue(ocred_file.is_saved(raise_exception=False))
         # testing ocred_file with different settings
-        if getattr(settings, 'OCR_STORE_FILES', ocr_default_settings.STORE_FILES):
+        if getattr(settings, 'OCR_STORE_FILES',
+                   ocr_default_settings.STORE_FILES):
             # store files is enabled
             self.assertTrue(os.path.isfile(ocred_file.file.path))
             self.assertTrue(ocred_file.can_remove_file)
             self.assertFalse(ocred_file.file_disabled)
             self.assertFalse(ocred_file.file_removed)
-            if getattr(settings, 'OCR_STORE_PDF', ocr_default_settings.STORE_PDF):
+            if getattr(settings, 'OCR_STORE_PDF',
+                       ocr_default_settings.STORE_PDF):
                 # store files is enabled and store pdf is enabled
-                if (not ocred_file.is_pdf or not ocred_file.has_pdf_text) and len(ocred_file.text):
+                if (not ocred_file.is_pdf or
+                        not ocred_file.has_pdf_text) and len(ocred_file.text):
                     # ocred_file must be ocred and ocred_pdf must be created
                     self.assertTrue(bool(ocred_file.ocred))
                     self.assertTrue(bool(ocred_file.ocred_pdf))
@@ -181,7 +199,8 @@ class OcrTestCaseBase(TestCase):
                     self.assertFalse(ocred_file.pdf_disabled)
                     self.assertFalse(ocred_file.pdf_removed)
                 else:
-                    if (not ocred_file.is_pdf or not ocred_file.has_pdf_text) and not len(ocred_file.text):
+                    if (not ocred_file.is_pdf or not ocred_file.has_pdf_text
+                        ) and not len(ocred_file.text):
                         # ocred_file must be ocred
                         self.assertTrue(bool(ocred_file.ocred))
                     else:
@@ -189,14 +208,16 @@ class OcrTestCaseBase(TestCase):
                         self.assertFalse(bool(ocred_file.ocred))
                     # ocred_pdf must be None
                     self.assertFalse(bool(ocred_file.ocred_pdf))
-                    self.assertFalse(bool(ocred_file.ocred_pdf_md5))  # because ocred_file must not be ocred
+                    self.assertFalse(bool(ocred_file.ocred_pdf_md5)
+                                     )  # because ocred_file must not be ocred
                     self.assertFalse(ocred_file.can_remove_pdf)
                     self.assertFalse(ocred_file.can_create_pdf)
                     self.assertFalse(ocred_file.pdf_disabled)
                     self.assertFalse(ocred_file.pdf_removed)
             else:
                 # store files is enabled and store pdf is disabled
-                if (not ocred_file.is_pdf or not ocred_file.has_pdf_text) and len(ocred_file.text):
+                if (not ocred_file.is_pdf or
+                        not ocred_file.has_pdf_text) and len(ocred_file.text):
                     # ocred_file must be ocred and ocred_pdf must 'store_pdf_disabled'
                     self.assertTrue(bool(ocred_file.ocred))
                     self.assertTrue(bool(ocred_file.ocred_pdf))
@@ -207,7 +228,8 @@ class OcrTestCaseBase(TestCase):
                     self.assertTrue(ocred_file.pdf_disabled)
                     self.assertFalse(ocred_file.pdf_removed)
                 else:
-                    if (not ocred_file.is_pdf or not ocred_file.has_pdf_text) and not len(ocred_file.text):
+                    if (not ocred_file.is_pdf or not ocred_file.has_pdf_text
+                        ) and not len(ocred_file.text):
                         # ocred_file must be ocred
                         self.assertTrue(bool(ocred_file.ocred))
                     else:
@@ -215,7 +237,8 @@ class OcrTestCaseBase(TestCase):
                         self.assertFalse(bool(ocred_file.ocred))
                     # ocred_pdf must be None
                     self.assertFalse(bool(ocred_file.ocred_pdf))
-                    self.assertFalse(bool(ocred_file.ocred_pdf_md5))  # because ocred_file must not be ocred
+                    self.assertFalse(bool(ocred_file.ocred_pdf_md5)
+                                     )  # because ocred_file must not be ocred
                     self.assertFalse(ocred_file.can_remove_pdf)
                     self.assertFalse(ocred_file.can_create_pdf)
                     self.assertFalse(ocred_file.pdf_disabled)
@@ -226,20 +249,24 @@ class OcrTestCaseBase(TestCase):
             self.assertTrue(ocred_file.file_disabled)
             self.assertFalse(ocred_file.can_remove_file)
             self.assertFalse(ocred_file.file_removed)
-            if getattr(settings, 'OCR_STORE_PDF', ocr_default_settings.STORE_PDF):
+            if getattr(settings, 'OCR_STORE_PDF',
+                       ocr_default_settings.STORE_PDF):
                 # store files is disabled and store pdf is enabled
-                if (not ocred_file.is_pdf or not ocred_file.has_pdf_text) and len(ocred_file.text):
+                if (not ocred_file.is_pdf or
+                        not ocred_file.has_pdf_text) and len(ocred_file.text):
                     # ocred_file must be ocred and ocred_pdf must be created
                     self.assertTrue(bool(ocred_file.ocred))
                     self.assertTrue(bool(ocred_file.ocred_pdf))
                     self.assertTrue(bool(ocred_file.ocred_pdf_md5))  #
-                    self.assertTrue(os.path.isfile(ocred_file.ocred_pdf.path))  #
+                    self.assertTrue(os.path.isfile(
+                        ocred_file.ocred_pdf.path))  #
                     self.assertTrue(ocred_file.can_remove_pdf)
                     self.assertFalse(ocred_file.can_create_pdf)
                     self.assertFalse(ocred_file.pdf_disabled)
                     self.assertFalse(ocred_file.pdf_removed)
                 else:
-                    if (not ocred_file.is_pdf or not ocred_file.has_pdf_text) and not len(ocred_file.text):
+                    if (not ocred_file.is_pdf or not ocred_file.has_pdf_text
+                        ) and not len(ocred_file.text):
                         # ocred_file must be ocred
                         self.assertTrue(bool(ocred_file.ocred))
                     else:
@@ -247,25 +274,31 @@ class OcrTestCaseBase(TestCase):
                         self.assertFalse(bool(ocred_file.ocred))
                     # ocred_pdf must be None
                     self.assertFalse(bool(ocred_file.ocred_pdf))
-                    self.assertFalse(bool(ocred_file.ocred_pdf_md5))  # because ocred_file must not be ocred
+                    self.assertFalse(bool(ocred_file.ocred_pdf_md5)
+                                     )  # because ocred_file must not be ocred
                     self.assertFalse(ocred_file.can_remove_pdf)
                     self.assertFalse(ocred_file.can_create_pdf)
                     self.assertFalse(ocred_file.pdf_disabled)
                     self.assertFalse(ocred_file.pdf_removed)
             else:
                 # store files is disabled and store pdf is disabled
-                if (not ocred_file.is_pdf or not ocred_file.has_pdf_text) and len(ocred_file.text):
+                if (not ocred_file.is_pdf or
+                        not ocred_file.has_pdf_text) and len(ocred_file.text):
                     # ocred_file must be ocred and ocred_pdf must 'store_pdf_disabled'
                     self.assertTrue(bool(ocred_file.ocred))
                     self.assertTrue(bool(ocred_file.ocred_pdf))
-                    self.assertTrue(bool(ocred_file.ocred_pdf_md5))  # because we need to prevent md5 duplication
-                    self.assertFalse(os.path.isfile(ocred_file.ocred_pdf.path))  # because store pdf disabled
+                    self.assertTrue(
+                        bool(ocred_file.ocred_pdf_md5
+                             ))  # because we need to prevent md5 duplication
+                    self.assertFalse(os.path.isfile(ocred_file.ocred_pdf.path)
+                                     )  # because store pdf disabled
                     self.assertFalse(ocred_file.can_remove_pdf)
                     self.assertFalse(ocred_file.can_create_pdf)
                     self.assertTrue(ocred_file.pdf_disabled)
                     self.assertFalse(ocred_file.pdf_removed)
                 else:
-                    if (not ocred_file.is_pdf or not ocred_file.has_pdf_text) and not len(ocred_file.text):
+                    if (not ocred_file.is_pdf or not ocred_file.has_pdf_text
+                        ) and not len(ocred_file.text):
                         # ocred_file must be ocred
                         self.assertTrue(bool(ocred_file.ocred))
                     else:
@@ -309,7 +342,8 @@ class OcrApiSerializerTestCase(OcrApiTestCaseBase):
         :return: InMemoryUploadedFile
         """
         content = read_binary_file(TESTS_DIR + filename)
-        return InMemoryUploadedFile(BytesIO(content), 'file', filename, file_type, content.__sizeof__(), None)
+        return InMemoryUploadedFile(BytesIO(content), 'file', filename,
+                                    file_type, content.__sizeof__(), None)
 
     def create_serializer(self, filename, file_type, text=None):
         """
@@ -319,17 +353,18 @@ class OcrApiSerializerTestCase(OcrApiTestCaseBase):
         :param text: the text to compare with created serialized['data'].text if it is not None
         :return: OCRedFileSerializer for the file with the file_type
         """
-        in_memory_file = OcrApiSerializerTestCase.create_in_memory_uploaded_file(filename=filename, file_type=file_type)
-        data = {
-            'file': in_memory_file
-        }
+        in_memory_file = OcrApiSerializerTestCase.create_in_memory_uploaded_file(
+            filename=filename, file_type=file_type)
+        data = {'file': in_memory_file}
         ocred_file_serializer = OCRedFileSerializer(data=data)
-        self.assertTrue(ocred_file_serializer.is_valid(raise_exception=True), 'The ocred_file_serialized does not valid')
+        self.assertTrue(ocred_file_serializer.is_valid(raise_exception=True),
+                        'The ocred_file_serialized does not valid')
         ocred_file_serializer.save()
         if text:
-            self.assertIn(text, ocred_file_serializer.data['text'],
-                          "The text '{}' is not equal the ocred_file_serializer['data'].text '{}'"
-                          .format(text, ocred_file_serializer.data['text']))
+            self.assertIn(
+                text, ocred_file_serializer.data['text'],
+                "The text '{}' is not equal the ocred_file_serializer['data'].text '{}'"
+                .format(text, ocred_file_serializer.data['text']))
         return ocred_file_serializer
 
 
@@ -337,7 +372,10 @@ class OcrApiViewTestCase(OcrApiTestCaseBase):
     """
     This class intended to test that views of API of OCR Server works as expected
     """
-    def upload_file(self, filename, ):
+    def upload_file(
+        self,
+        filename,
+    ):
         """
         This function uploads the file to OCR Server using OcrApiClient
         and returns Response 2019-03-24/2019-03-29
@@ -345,9 +383,11 @@ class OcrApiViewTestCase(OcrApiTestCaseBase):
         :return: rest framework response
         """
         with open(TESTS_DIR + filename, 'rb') as fp:
-            return self.client.post(reverse(__package__+':upload'),
-                                    {'file': fp},
-                                    format='multipart', )
+            return self.client.post(
+                reverse(__package__ + ':upload'),
+                {'file': fp},
+                format='multipart',
+            )
 
     def assertUploadFileResponse(self, response, md5=None, text=None):
         """
@@ -357,16 +397,22 @@ class OcrApiViewTestCase(OcrApiTestCaseBase):
         :param text: the text to compare with the response.data['data']['text'] if it exists
         :return: None
         """
-        self.assertEqual(201, response.status_code,
-                         'Expected Response Code 201 received {} instead.'.format(response.status_code))
-        self.assertFalse(response.data['error'], 'An error has occured in upload API view')
+        self.assertEqual(
+            201, response.status_code,
+            'Expected Response Code 201 received {} instead.'.format(
+                response.status_code))
+        self.assertFalse(response.data['error'],
+                         'An error has occured in upload API view')
         self.assertTrue(response.data['created'], 'Created must be True')
         if md5:
             self.assertEqual(md5, response.data['data']['md5'])
         if text:
             self.assertIn(text, response.data['data']['text'])
 
-    def assertUploadFileDuplicationResponse(self, response, md5=None, text=None):
+    def assertUploadFileDuplicationResponse(self,
+                                            response,
+                                            md5=None,
+                                            text=None):
         """
         This function tests response of page of uploading file of OCR Server
         when uploaded file already exist in OCR Server 2019-03-30
@@ -375,9 +421,12 @@ class OcrApiViewTestCase(OcrApiTestCaseBase):
         :param text: the text to compare with the response.data['data']['text'] if it exists
         :return: None
         """
-        self.assertEqual(200, response.status_code,
-                         'Expected Response Code 200 received {} instead.'.format(response.status_code))
-        self.assertFalse(response.data['error'], 'An error has occured in upload API view')
+        self.assertEqual(
+            200, response.status_code,
+            'Expected Response Code 200 received {} instead.'.format(
+                response.status_code))
+        self.assertFalse(response.data['error'],
+                         'An error has occured in upload API view')
         self.assertFalse(response.data['created'], 'Created must be False')
         if md5:
             self.assertEqual(md5, response.data['data']['md5'])
@@ -391,12 +440,16 @@ class OcrApiViewTestCase(OcrApiTestCaseBase):
         :param response: the response of the page of uploading file of OCR Server
         :return: None
         """
-        self.assertEqual(400, response.status_code,
-                         'Expected Response Code 400 received {} instead.'.format(response.status_code))
-        self.assertTrue(response.data['error'], "The 'error' of the response must be True")
-        self.assertEqual('wrong_file_type', response.data['code'],
-                         "The 'code' of response '{}' must be 'wrong_file_type'"
-                         .format(response.data['code']))
+        self.assertEqual(
+            400, response.status_code,
+            'Expected Response Code 400 received {} instead.'.format(
+                response.status_code))
+        self.assertTrue(response.data['error'],
+                        "The 'error' of the response must be True")
+        self.assertEqual(
+            'wrong_file_type', response.data['code'],
+            "The 'code' of response '{}' must be 'wrong_file_type'".format(
+                response.data['code']))
 
 
 class OcrAdminTestCase(OcrTestCaseBase):
@@ -423,7 +476,7 @@ class TestMd5(SimpleTestCase):
         This function tests that md5 calculation works
         :return: None
         """
-        content = read_binary_file(TESTS_DIR+'test_eng.png')
+        content = read_binary_file(TESTS_DIR + 'test_eng.png')
         self.assertEqual(md5(content), '8aabb1f2d2d92893b5604da701f05505')
 
 
@@ -436,8 +489,9 @@ class TestPdf2text(SimpleTestCase):
         This function tests that extraction text from pdf works as expected   03/10/2019
         :return: None
         """
-        content = read_binary_file(TESTS_DIR+'test_eng.pdf')
-        self.assertIn('A some english text to test Tesseract', pdf2text(content))
+        content = read_binary_file(TESTS_DIR + 'test_eng.pdf')
+        self.assertIn('A some english text to test Tesseract',
+                      pdf2text(content))
 
     def test_pdf_need_ocr(self):
         """
@@ -459,9 +513,10 @@ class TestPdfInfo(SimpleTestCase):
         This function tests that pdfInfo extraction from pdf works as expected   03/11/2019
         :return: None
         """
-        content = read_binary_file(TESTS_DIR+'deming.pdf')
+        content = read_binary_file(TESTS_DIR + 'deming.pdf')
         info = pdf_info(content)
-        self.assertIn('Ascensio System SIA Copyright (c) 2018', info['Producer'])
+        self.assertIn('Ascensio System SIA Copyright (c) 2018',
+                      info['Producer'])
 
 
 class TestTesseract(SimpleTestCase):
@@ -473,15 +528,17 @@ class TestTesseract(SimpleTestCase):
         This function tests that tesseract-ocr of image with english content works as expected   03/10/2019
         :return: None
         """
-        content = read_binary_file(TESTS_DIR+'test_eng.png')
-        self.assertIn('A some english text to test Tesseract', ocr_img2str(content))
+        content = read_binary_file(TESTS_DIR + 'test_eng.png')
+        self.assertIn('A some english text to test Tesseract',
+                      ocr_img2str(content))
 
     def test_img2str_rus(self):
         """
         This function tests that tesseract-ocr of image with russian content works as expected   03/10/2019
         :return: None
         """
-        if 'rus' not in getattr(settings, 'OCR_TESSERACT_LANG', ocr_default_settings.TESSERACT_LANG):
+        if 'rus' not in getattr(settings, 'OCR_TESSERACT_LANG',
+                                ocr_default_settings.TESSERACT_LANG):
             return
         content = read_binary_file(TESTS_DIR + 'test_rus.png')
         self.assertIn('Проверяем tesseract', ocr_img2str(content))
@@ -493,7 +550,8 @@ class TestTesseract(SimpleTestCase):
         """
         content = read_binary_file(TESTS_DIR + 'test_eng.png')
         pdf_bytes = ocr_img2pdf(content)
-        self.assertIn('A some english text to test Tesseract', pdf2text(pdf_bytes))
+        self.assertIn('A some english text to test Tesseract',
+                      pdf2text(pdf_bytes))
 
 
 class TestOcrMyPdf(SimpleTestCase):
@@ -505,12 +563,15 @@ class TestOcrMyPdf(SimpleTestCase):
         This function tests that ocrmypdf works as expected 2019-03-11
         :return: None
         """
-        content = read_binary_file(TESTS_DIR + 'test_eng.pdf')
-        md5_content = md5(content)
-        filename = os.path.join(settings.BASE_DIR,
-                                getattr(settings, 'OCR_PDF_UPLOAD_TO',
-                                        ocr_default_settings.PDF_UPLOAD_TO)) + md5_content + '.pdf'
+        content: bytes = read_binary_file(TESTS_DIR + 'test_eng.pdf')
+        md5_content: str = md5(content)
+        pdf_upload_to: str = getattr(settings, 'OCR_PDF_UPLOAD_TO',
+                                     ocr_default_settings.PDF_UPLOAD_TO)
+        filename: str = os.path.join(settings.BASE_DIR, pdf_upload_to,
+                                     f'{md5_content}.pdf')
+        print(f'filename={filename}')
         pdf_text = ocr_pdf(content, filename)
+        print(f'is_file={os.path.isfile(filename)}')
         new_content = read_binary_file(filename)
         if os.path.isfile(filename):
             os.remove(filename)
@@ -534,7 +595,8 @@ class TestSaveModel(OcrTestCase):
         :return: None
         """
         # 1 testing png
-        ocred_file = OcrTestCase.createOCRedFile(filename='test_eng.png', file_type='image/png')
+        ocred_file = OcrTestCase.createOCRedFile(filename='test_eng.png',
+                                                 file_type='image/png')
         self.assertOCRedFile(ocred_file,
                              md5='8aabb1f2d2d92893b5604da701f05505',
                              text='A some english text to test Tesseract')
@@ -563,35 +625,43 @@ class TestSaveModel(OcrTestCase):
         ocred_file.remove_pdf()
         self.assertFalse(ocred_file.can_create_pdf)
         # 2. testing pdf with text
-        ocred_file = OcrTestCase.createOCRedFile(filename='the_pdf_withtext.pdf', file_type='application/pdf')
+        ocred_file = OcrTestCase.createOCRedFile(
+            filename='the_pdf_withtext.pdf', file_type='application/pdf')
         self.assertOCRedFile(ocred_file,
                              md5='55afdb2874e53370a1565776a6bd4ad7',
                              text='The test if pdf with text')
-        self.assertEqual('2019-03-17 03:45:57+00', str(ocred_file.pdf_creation_date))
+        self.assertEqual('2019-03-17 03:45:57+00',
+                         str(ocred_file.pdf_creation_date))
         self.assertEqual('Tesseract 4.0.0-beta.1', ocred_file.pdf_producer)
         self.assertFalse(ocred_file.can_create_pdf)
         self.assertFalse(ocred_file.can_remove_pdf)
         # 3. testing pdf without text
-        ocred_file = OcrTestCase.createOCRedFile(filename='test_eng_notext.pdf', file_type='application/pdf')
+        ocred_file = OcrTestCase.createOCRedFile(
+            filename='test_eng_notext.pdf', file_type='application/pdf')
         self.assertOCRedFile(ocred_file,
                              md5='4ee3751a767b02d072d33424a84457a9',
                              text='A some english text to test Tesseract')
-        self.assertEqual('2019-03-17 09:52:26+07', str(ocred_file.pdf_creation_date))
-        self.assertEqual('2019-03-17 09:52:26+07', str(ocred_file.pdf_mod_date))
+        self.assertEqual('2019-03-17 09:52:26+07',
+                         str(ocred_file.pdf_creation_date))
+        self.assertEqual('2019-03-17 09:52:26+07',
+                         str(ocred_file.pdf_mod_date))
         self.assertEqual('GPL Ghostscript 9.26', ocred_file.pdf_producer)
         # 4. testing md5_duplication
         try:
-            ocred_file2 = OcrTestCase.createOCRedFile(filename='the_pdf_withtext.pdf', file_type='application/pdf')
+            ocred_file2 = OcrTestCase.createOCRedFile(
+                filename='the_pdf_withtext.pdf', file_type='application/pdf')
             self.assertTrue(False, 'OCRedFile md5 deduplication does not work')
         except Md5DuplicationError as e:
             pass
         # 5. testing jpg image does not contain text
-        ocred_file = OcrTestCase.createOCRedFile(filename='shmakovpn.jpg', file_type='image/jpeg')
+        ocred_file = OcrTestCase.createOCRedFile(filename='shmakovpn.jpg',
+                                                 file_type='image/jpeg')
         self.assertOCRedFile(ocred_file,
                              md5='c0b2e5805ed926fe6db4f396e991aa5f',
                              text='')
         # 6. testing pdf without text that contains image withot text
-        ocred_file = OcrTestCase.createOCRedFile(filename='shmakovpn.pdf', file_type='application/pdf')
+        ocred_file = OcrTestCase.createOCRedFile(filename='shmakovpn.pdf',
+                                                 file_type='application/pdf')
         self.assertOCRedFile(ocred_file,
                              md5='13d7a3a85a6d09045d22c1a95fea7d04',
                              text='')
@@ -606,7 +676,8 @@ class TestSaveModel(OcrTestCase):
         :return:
         """
         # 1 testing png
-        ocred_file = OcrTestCase.createOCRedFile(filename='test_eng.png', file_type='image/png')
+        ocred_file = OcrTestCase.createOCRedFile(filename='test_eng.png',
+                                                 file_type='image/png')
         self.assertOCRedFile(ocred_file,
                              md5='8aabb1f2d2d92893b5604da701f05505',
                              text='A some english text to test Tesseract')
@@ -621,7 +692,8 @@ class TestSaveModel(OcrTestCase):
         self.assertFalse(ocred_file.can_create_pdf)
         self.assertTrue(os.path.isfile(ocred_file.ocred_pdf.path))
         # 2 testing pdf with text
-        ocred_file = OcrTestCase.createOCRedFile(filename='the_pdf_withtext.pdf', file_type='application/pdf')
+        ocred_file = OcrTestCase.createOCRedFile(
+            filename='the_pdf_withtext.pdf', file_type='application/pdf')
         self.assertOCRedFile(ocred_file,
                              md5='55afdb2874e53370a1565776a6bd4ad7',
                              text='The test if pdf with text')
@@ -638,7 +710,8 @@ class TestSaveModel(OcrTestCase):
         :return: None
         """
         # 1 testing png
-        ocred_file = OcrTestCase.createOCRedFile(filename='test_eng.png', file_type='image/png')
+        ocred_file = OcrTestCase.createOCRedFile(filename='test_eng.png',
+                                                 file_type='image/png')
         self.assertOCRedFile(ocred_file,
                              md5='8aabb1f2d2d92893b5604da701f05505',
                              text='A some english text to test Tesseract')
@@ -664,7 +737,8 @@ class TestSaveModel(OcrTestCase):
         :return: None
         """
         # 1 testing png
-        ocred_file = OcrTestCase.createOCRedFile(filename='test_eng.png', file_type='image/png')
+        ocred_file = OcrTestCase.createOCRedFile(filename='test_eng.png',
+                                                 file_type='image/png')
         self.assertOCRedFile(ocred_file,
                              md5='8aabb1f2d2d92893b5604da701f05505',
                              text='A some english text to test Tesseract')
@@ -686,25 +760,37 @@ class TestAPISerializer(OcrApiSerializerTestCase):
         :return: None
         """
         # uploading test_eng.png using a OCRedFileSerializer
-        self.create_serializer(filename='test_eng.png', file_type='image/png',
+        self.create_serializer(filename='test_eng.png',
+                               file_type='image/png',
                                text='A some english text to test Tesseract')
         # test md5 deduplication
         try:
-            self.create_serializer(filename='test_eng.png', file_type='image/png', text=None)
-            self.assertTrue(False, 'MD5 deduplication does not work for OCRedFileSerializer')
+            self.create_serializer(filename='test_eng.png',
+                                   file_type='image/png',
+                                   text=None)
+            self.assertTrue(
+                False,
+                'MD5 deduplication does not work for OCRedFileSerializer')
         except Md5DuplicationError as e:
             pass
         # uploading the_pdf_withtext.pdf
-        self.create_serializer('the_pdf_withtext.pdf', 'application/pdf', text=None)
+        self.create_serializer('the_pdf_withtext.pdf',
+                               'application/pdf',
+                               text=None)
         # uploading test_eng.pdf
         self.create_serializer('test_eng.pdf', 'application/pdf', text=None)
         # uploading deming.pdf
         self.create_serializer('deming.pdf', 'application/pdf', text=None)
         # testing list_view
-        request = APIRequestFactory().get(reverse(__package__+':list'),
-                                          HTTP_AUTHORIZATION='Token {}'.format(self.client.token), )
+        request = APIRequestFactory().get(
+            reverse(__package__ + ':list'),
+            HTTP_AUTHORIZATION='Token {}'.format(self.client.token),
+        )
         response = OCRedFileList.as_view()(request)
-        self.assertEqual(200, response.status_code, )
+        self.assertEqual(
+            200,
+            response.status_code,
+        )
 
 
 class TestApiUploadView(OcrApiViewTestCase):
@@ -719,14 +805,16 @@ class TestApiUploadView(OcrApiViewTestCase):
         filename = 'test_eng.png'
         # uploading file
         response = self.upload_file(filename=filename)
-        self.assertUploadFileResponse(response,
-                                      md5='8aabb1f2d2d92893b5604da701f05505',
-                                      text='A some english text to test Tesseract')
+        self.assertUploadFileResponse(
+            response,
+            md5='8aabb1f2d2d92893b5604da701f05505',
+            text='A some english text to test Tesseract')
         # uploading the same file once again
         response = self.upload_file(filename=filename)
-        self.assertUploadFileDuplicationResponse(response,
-                                      md5='8aabb1f2d2d92893b5604da701f05505',
-                                      text='A some english text to test Tesseract')
+        self.assertUploadFileDuplicationResponse(
+            response,
+            md5='8aabb1f2d2d92893b5604da701f05505',
+            text='A some english text to test Tesseract')
         # uploading the file with wrong file_type
         response = self.upload_file(filename='not_image.txt')
         self.assertUploadFileWrongTypeResponse(response)
@@ -762,9 +850,12 @@ class TestApiMd5Views(OcrApiViewTestCase):
         2019-03-30
         :return: rest framework response
         """
-        response = self.client.get(reverse(__package__ + ':md5', kwargs={'md5': self.md5}))
-        self.assertEqual(200, response.status_code,
-                         'Expected Response Code 200 received {} instead.'.format(response.status_code))
+        response = self.client.get(
+            reverse(__package__ + ':md5', kwargs={'md5': self.md5}))
+        self.assertEqual(
+            200, response.status_code,
+            'Expected Response Code 200 received {} instead.'.format(
+                response.status_code))
         self.assertFalse(response.data['error'])
         self.assertTrue(response.data['exists'])
         self.assertEqual(self.md5, response.data['data']['md5'])
@@ -790,44 +881,66 @@ class TestApiMd5Views(OcrApiViewTestCase):
         :return: None
         """
         # setUp
-        self.ocred_file = self.createOCRedFile(filename=self.filename, file_type=self.file_type)
-        self.assertOCRedFile(self.ocred_file, md5=self.md5, text=self.text, )
+        self.ocred_file = self.createOCRedFile(filename=self.filename,
+                                               file_type=self.file_type)
+        self.assertOCRedFile(
+            self.ocred_file,
+            md5=self.md5,
+            text=self.text,
+        )
         #
         response = self.get_self_md5_view()
         self.assertTrue(response.data['data']['can_remove_file'])
         self.assertTrue(response.data['data']['can_remove_pdf'])
         self.assertFalse(response.data['data']['can_create_pdf'])
         # testing download_file
-        response_download_file = self.client.get(response.data['data']['download_file'])
+        response_download_file = self.client.get(
+            response.data['data']['download_file'])
         self.assertEqual(200, response_download_file.status_code)
-        self.assertIn('image/png', response_download_file._content_type_for_repr)
+        self.assertIn('image/png',
+                      response_download_file._content_type_for_repr)
         # testing download_ocred_pdf
-        response_download_ocred_pdf = self.client.get(response.data['data']['download_ocred_pdf'])
+        response_download_ocred_pdf = self.client.get(
+            response.data['data']['download_ocred_pdf'])
         self.assertEqual(200, response_download_ocred_pdf.status_code)
-        self.assertIn('application/pdf', response_download_ocred_pdf._content_type_for_repr)
+        self.assertIn('application/pdf',
+                      response_download_ocred_pdf._content_type_for_repr)
         # remove OCRedFile.ocred_pdf
         self.ocred_file.remove_pdf()
         response_removed_pdf = self.get_self_md5_view()
         self.assertFalse(response_removed_pdf.data['data']['can_remove_pdf'])
         self.assertTrue(response_removed_pdf.data['data']['can_create_pdf'])
-        self.assertTrue(response_removed_pdf.data['data']['ocred_pdf_md5'] is not None)
-        self.assertTrue(response_removed_pdf.data['data']['download_ocred_pdf'] is None)
+        self.assertTrue(
+            response_removed_pdf.data['data']['ocred_pdf_md5'] is not None)
+        self.assertTrue(
+            response_removed_pdf.data['data']['download_ocred_pdf'] is None)
         # remove OCRedFile.file
         self.ocred_file.remove_file()
         response_removed_file = self.get_self_md5_view()
         self.assertFalse(response_removed_file.data['data']['can_remove_file'])
         self.assertFalse(response_removed_file.data['data']['can_create_pdf'])
         self.assertTrue(response_removed_file.data['data']['md5'] is not None)
-        self.assertTrue(response_removed_file.data['data']['download_file'] is None)
+        self.assertTrue(
+            response_removed_file.data['data']['download_file'] is None)
         # 2. create OCRedFile for the_pdf_withtext.pdf md5='55afdb2874e53370a1565776a6bd4ad7',
         #                              text='The test if pdf with text'
-        ocred_file_pdf_with_text = self.createOCRedFile(filename='the_pdf_withtext.pdf', file_type='application/pdf')
-        self.assertOCRedFile(ocred_file_pdf_with_text, md5='55afdb2874e53370a1565776a6bd4ad7', text='The test if pdf with text', )
-        response_pdf_with_text = self.client.get(reverse(__package__ + ':md5', kwargs={'md5': '55afdb2874e53370a1565776a6bd4ad7'}))
+        ocred_file_pdf_with_text = self.createOCRedFile(
+            filename='the_pdf_withtext.pdf', file_type='application/pdf')
+        self.assertOCRedFile(
+            ocred_file_pdf_with_text,
+            md5='55afdb2874e53370a1565776a6bd4ad7',
+            text='The test if pdf with text',
+        )
+        response_pdf_with_text = self.client.get(
+            reverse(__package__ + ':md5',
+                    kwargs={'md5': '55afdb2874e53370a1565776a6bd4ad7'}))
         self.assertEqual(200, response_pdf_with_text.status_code)
-        self.assertTrue(response_pdf_with_text.data['data']['download_ocred_pdf'] is None)
+        self.assertTrue(
+            response_pdf_with_text.data['data']['download_ocred_pdf'] is None)
         # 3. check md5 that does not exist
-        response_doesnot_exist = self.client.get(reverse(__package__ + ':md5', kwargs={'md5': '7aabb1f2d2d92893b5604da701f05500'}))
+        response_doesnot_exist = self.client.get(
+            reverse(__package__ + ':md5',
+                    kwargs={'md5': '7aabb1f2d2d92893b5604da701f05500'}))
         self.assertEqual(204, response_doesnot_exist.status_code)
         self.assertFalse(response_doesnot_exist.data['error'])
         self.assertFalse(response_doesnot_exist.data['exists'])
@@ -847,8 +960,13 @@ class TestApiMd5Views(OcrApiViewTestCase):
         :return: None
         """
         # setUp
-        self.ocred_file = self.createOCRedFile(filename=self.filename, file_type=self.file_type)
-        self.assertOCRedFile(self.ocred_file, md5=self.md5, text=self.text, )
+        self.ocred_file = self.createOCRedFile(filename=self.filename,
+                                               file_type=self.file_type)
+        self.assertOCRedFile(
+            self.ocred_file,
+            md5=self.md5,
+            text=self.text,
+        )
         #
         response = self.get_self_md5_view()
         self.assertTrue(response.data['data']['can_remove_file'])
@@ -859,10 +977,12 @@ class TestApiMd5Views(OcrApiViewTestCase):
         # create pdf
         self.ocred_file.create_pdf()
         response_create_pdf = self.get_self_md5_view()
-        self.assertTrue(response_create_pdf.data['data']['download_ocred_pdf'] is not None)
+        self.assertTrue(
+            response_create_pdf.data['data']['download_ocred_pdf'] is not None)
         self.assertTrue(response_create_pdf.data['data']['can_remove_pdf'])
         self.assertFalse(response_create_pdf.data['data']['can_create_pdf'])
-        self.assertTrue(response_create_pdf.data['data']['ocred_pdf_md5'] is not None)
+        self.assertTrue(
+            response_create_pdf.data['data']['ocred_pdf_md5'] is not None)
 
     @override_settings(OCR_STORE_FILES=False, OCR_STORE_PDF=True)
     def test_md5_view_nofiles_pdf(self):
@@ -878,8 +998,13 @@ class TestApiMd5Views(OcrApiViewTestCase):
         :return: None
         """
         # setUp
-        self.ocred_file = self.createOCRedFile(filename=self.filename, file_type=self.file_type)
-        self.assertOCRedFile(self.ocred_file, md5=self.md5, text=self.text, )
+        self.ocred_file = self.createOCRedFile(filename=self.filename,
+                                               file_type=self.file_type)
+        self.assertOCRedFile(
+            self.ocred_file,
+            md5=self.md5,
+            text=self.text,
+        )
         #
         response = self.get_self_md5_view()
         self.assertFalse(response.data['data']['can_remove_file'])
@@ -898,17 +1023,26 @@ class TestApiMd5Views(OcrApiViewTestCase):
         :return: None
         """
         # setUp
-        self.ocred_file = self.createOCRedFile(filename=self.filename, file_type=self.file_type)
-        self.assertOCRedFile(self.ocred_file, md5=self.md5, text=self.text, )
+        self.ocred_file = self.createOCRedFile(filename=self.filename,
+                                               file_type=self.file_type)
+        self.assertOCRedFile(
+            self.ocred_file,
+            md5=self.md5,
+            text=self.text,
+        )
         # delete instance of OCRedFile
-        response = self.client.delete(reverse(__package__ + ':remove_md5', kwargs={'md5': self.md5}))
-        self.assertEqual(200, response.status_code,
-                         'Expected Response Code 200 received {} instead.'.format(response.status_code))
+        response = self.client.delete(
+            reverse(__package__ + ':remove_md5', kwargs={'md5': self.md5}))
+        self.assertEqual(
+            200, response.status_code,
+            'Expected Response Code 200 received {} instead.'.format(
+                response.status_code))
         self.assertFalse(response.data['error'])
         self.assertTrue(response.data['exists'])
         self.assertTrue(response.data['removed'])
         # try delete instance of OCRedFile that does not exist
-        response = self.client.delete(reverse(__package__ + ':remove_md5', kwargs={'md5': self.md5}))
+        response = self.client.delete(
+            reverse(__package__ + ':remove_md5', kwargs={'md5': self.md5}))
         self.assertFalse(response.data['error'])
         self.assertFalse(response.data['exists'])
         self.assertFalse(response.data['removed'])
@@ -920,28 +1054,44 @@ class TestApiMd5Views(OcrApiViewTestCase):
         :return: None
         """
         # setUp
-        self.ocred_file = self.createOCRedFile(filename=self.filename, file_type=self.file_type)
-        self.assertOCRedFile(self.ocred_file, md5=self.md5, text=self.text, )
+        self.ocred_file = self.createOCRedFile(filename=self.filename,
+                                               file_type=self.file_type)
+        self.assertOCRedFile(
+            self.ocred_file,
+            md5=self.md5,
+            text=self.text,
+        )
         #
-        response = self.client.delete(reverse(__package__ + ':remove_file_md5', kwargs={'md5': self.md5}))
-        self.assertEqual(200, response.status_code,
-                         'Expected Response Code 200 received {} instead.'.format(response.status_code))
+        response = self.client.delete(
+            reverse(__package__ + ':remove_file_md5', kwargs={'md5':
+                                                              self.md5}))
+        self.assertEqual(
+            200, response.status_code,
+            'Expected Response Code 200 received {} instead.'.format(
+                response.status_code))
         self.assertFalse(response.data['error'])
         self.assertTrue(response.data['exists'])
         self.assertTrue(response.data['removed'])
         # remove file that does not exist from the instance of OCRedFile (try to remove the same file again)
-        response = self.client.delete(reverse(__package__ + ':remove_file_md5', kwargs={'md5': self.md5}))
-        self.assertEqual(204, response.status_code,
-                         'Expected Response Code 204 received {} instead.'.format(response.status_code))
+        response = self.client.delete(
+            reverse(__package__ + ':remove_file_md5', kwargs={'md5':
+                                                              self.md5}))
+        self.assertEqual(
+            204, response.status_code,
+            'Expected Response Code 204 received {} instead.'.format(
+                response.status_code))
         self.assertFalse(response.data['error'])
         self.assertTrue(response.data['exists'])
         self.assertFalse(response.data['can_remove_file'])
         self.assertFalse(response.data['removed'])
         # remove file from the instance that does not exist
         response = self.client.delete(
-            reverse(__package__ + ':remove_file_md5', kwargs={'md5': '7aabb1f2d2d92893b5604da701f05504'}))
-        self.assertEqual(204, response.status_code,
-                         'Expected Response Code 204 received {} instead.'.format(response.status_code))
+            reverse(__package__ + ':remove_file_md5',
+                    kwargs={'md5': '7aabb1f2d2d92893b5604da701f05504'}))
+        self.assertEqual(
+            204, response.status_code,
+            'Expected Response Code 204 received {} instead.'.format(
+                response.status_code))
         self.assertFalse(response.data['error'])
         self.assertFalse(response.data['exists'])
         self.assertFalse(response.data['removed'])
@@ -953,29 +1103,43 @@ class TestApiMd5Views(OcrApiViewTestCase):
         :return: None
         """
         # setUp
-        self.ocred_file = self.createOCRedFile(filename=self.filename, file_type=self.file_type)
-        self.assertOCRedFile(self.ocred_file, md5=self.md5, text=self.text, )
+        self.ocred_file = self.createOCRedFile(filename=self.filename,
+                                               file_type=self.file_type)
+        self.assertOCRedFile(
+            self.ocred_file,
+            md5=self.md5,
+            text=self.text,
+        )
         #
         # remove ocred_pdf from the instance of OCRedFile
-        response = self.client.delete(reverse(__package__ + ':remove_pdf_md5', kwargs={'md5': self.md5}))
-        self.assertEqual(200, response.status_code,
-                         'Expected Response Code 200 received {} instead.'.format(response.status_code))
+        response = self.client.delete(
+            reverse(__package__ + ':remove_pdf_md5', kwargs={'md5': self.md5}))
+        self.assertEqual(
+            200, response.status_code,
+            'Expected Response Code 200 received {} instead.'.format(
+                response.status_code))
         self.assertFalse(response.data['error'])
         self.assertTrue(response.data['exists'])
         self.assertTrue(response.data['removed'])
         # remove ocred_pdf that does not exist from the instance of OCRedFile (try to remove the same file again)
-        response = self.client.delete(reverse(__package__ + ':remove_pdf_md5', kwargs={'md5': self.md5}))
-        self.assertEqual(204, response.status_code,
-                         'Expected Response Code 204 received {} instead.'.format(response.status_code))
+        response = self.client.delete(
+            reverse(__package__ + ':remove_pdf_md5', kwargs={'md5': self.md5}))
+        self.assertEqual(
+            204, response.status_code,
+            'Expected Response Code 204 received {} instead.'.format(
+                response.status_code))
         self.assertFalse(response.data['error'])
         self.assertTrue(response.data['exists'])
         self.assertFalse(response.data['can_remove_pdf'])
         self.assertFalse(response.data['removed'])
         # remove ocred_pdf from the instance that does not exist
         response = self.client.delete(
-            reverse(__package__ + ':remove_pdf_md5', kwargs={'md5': '7aabb1f2d2d92893b5604da701f05504'}))
-        self.assertEqual(204, response.status_code,
-                         'Expected Response Code 204 received {} instead.'.format(response.status_code))
+            reverse(__package__ + ':remove_pdf_md5',
+                    kwargs={'md5': '7aabb1f2d2d92893b5604da701f05504'}))
+        self.assertEqual(
+            204, response.status_code,
+            'Expected Response Code 204 received {} instead.'.format(
+                response.status_code))
         self.assertFalse(response.data['error'])
         self.assertFalse(response.data['exists'])
         self.assertFalse(response.data['removed'])
@@ -987,26 +1151,38 @@ class TestApiMd5Views(OcrApiViewTestCase):
         :return: None
         """
         # setUp
-        self.ocred_file = self.createOCRedFile(filename=self.filename, file_type=self.file_type)
-        self.assertOCRedFile(self.ocred_file, md5=self.md5, text=self.text, )
+        self.ocred_file = self.createOCRedFile(filename=self.filename,
+                                               file_type=self.file_type)
+        self.assertOCRedFile(
+            self.ocred_file,
+            md5=self.md5,
+            text=self.text,
+        )
         #
         # remove ocred_pdf from the instance of OCRedFile
         self.ocred_file.remove_pdf()
         # create ocred_pdf in instance of OCRedFile
-        response = self.client.get(reverse(__package__ + ':create_pdf_md5', kwargs={'md5': self.md5}))
-        self.assertEqual(201, response.status_code,
-                         'Expected Response Code 201 received {0} instead.'.format(response.status_code))
+        response = self.client.get(
+            reverse(__package__ + ':create_pdf_md5', kwargs={'md5': self.md5}))
+        self.assertEqual(
+            201, response.status_code,
+            'Expected Response Code 201 received {0} instead.'.format(
+                response.status_code))
         self.assertFalse(response.data['error'])
         self.assertTrue(response.data['exists'])
         self.assertTrue(response.data['created'])
         # create ocred_pdf in the instance of OCRedFile whose ocred_pdf already exists
-        response = self.client.get(reverse(__package__ + ':create_pdf_md5', kwargs={'md5': self.md5}))
-        self.assertEqual(204, response.status_code,
-                         'Expected Response Code 204 received {0} instead.'.format(response.status_code))
+        response = self.client.get(
+            reverse(__package__ + ':create_pdf_md5', kwargs={'md5': self.md5}))
+        self.assertEqual(
+            204, response.status_code,
+            'Expected Response Code 204 received {0} instead.'.format(
+                response.status_code))
         self.assertFalse(response.data['error'])
         self.assertTrue(response.data['exists'])
         self.assertFalse(response.data['can_create_pdf'])
         self.assertFalse(response.data['created'])
+
 
 class TestApiAllViews(OcrApiViewTestCase):
     """
@@ -1027,17 +1203,29 @@ class TestApiAllViews(OcrApiViewTestCase):
         :return: None
         """
         # create OCRedFile 1
-        self.ocred_file = self.createOCRedFile(filename='test_eng.png', file_type='image/png')
-        self.assertOCRedFile(self.ocred_file, md5='8aabb1f2d2d92893b5604da701f05505',
-                             text='A some english text to test Tesseract', )
+        self.ocred_file = self.createOCRedFile(filename='test_eng.png',
+                                               file_type='image/png')
+        self.assertOCRedFile(
+            self.ocred_file,
+            md5='8aabb1f2d2d92893b5604da701f05505',
+            text='A some english text to test Tesseract',
+        )
         # create OCRedFile 2
-        self.ocred_file = self.createOCRedFile(filename='test_eng_notext.pdf', file_type='application/pdf')
-        self.assertOCRedFile(self.ocred_file, md5='4ee3751a767b02d072d33424a84457a9',
-                             text='A some english text to test Tesseract', )
+        self.ocred_file = self.createOCRedFile(filename='test_eng_notext.pdf',
+                                               file_type='application/pdf')
+        self.assertOCRedFile(
+            self.ocred_file,
+            md5='4ee3751a767b02d072d33424a84457a9',
+            text='A some english text to test Tesseract',
+        )
         # create OCRedFile 3
-        self.ocred_file = self.createOCRedFile(filename='the_pdf_withtext.pdf', file_type='application/pdf')
-        self.assertOCRedFile(self.ocred_file, md5='55afdb2874e53370a1565776a6bd4ad7',
-                             text='The test if pdf with text', )
+        self.ocred_file = self.createOCRedFile(filename='the_pdf_withtext.pdf',
+                                               file_type='application/pdf')
+        self.assertOCRedFile(
+            self.ocred_file,
+            md5='55afdb2874e53370a1565776a6bd4ad7',
+            text='The test if pdf with text',
+        )
 
     def test_remove_all_view(self):
         """
@@ -1046,9 +1234,11 @@ class TestApiAllViews(OcrApiViewTestCase):
         """
         self.set_up()
         #
-        response = self.client.delete(reverse(__package__+':remove_all'))
-        self.assertEqual(200, response.status_code,
-                         'Expected Response Code 200 received {0} instead.'.format(response.status_code))
+        response = self.client.delete(reverse(__package__ + ':remove_all'))
+        self.assertEqual(
+            200, response.status_code,
+            'Expected Response Code 200 received {0} instead.'.format(
+                response.status_code))
         self.assertFalse(response.data['error'])
         self.assertTrue(response.data['removed'])
         self.assertEqual(3, response.data['count'])
@@ -1061,9 +1251,12 @@ class TestApiAllViews(OcrApiViewTestCase):
         """
         self.set_up()
         #
-        response = self.client.delete(reverse(__package__ + ':remove_file_all'))
-        self.assertEqual(200, response.status_code,
-                         'Expected Response Code 200 received {0} instead.'.format(response.status_code))
+        response = self.client.delete(reverse(__package__ +
+                                              ':remove_file_all'))
+        self.assertEqual(
+            200, response.status_code,
+            'Expected Response Code 200 received {0} instead.'.format(
+                response.status_code))
         self.assertFalse(response.data['error'])
         self.assertTrue(response.data['removed'])
         self.assertEqual(3, response.data['count'])
@@ -1077,14 +1270,16 @@ class TestApiAllViews(OcrApiViewTestCase):
         self.set_up()
         #
         # remove pdf
-        response = self.client.delete(reverse(__package__+':remove_pdf_all'))
-        self.assertEqual(200, response.status_code,
-                         'Expected Response Code 200 received {0} instead.'.format(response.status_code))
+        response = self.client.delete(reverse(__package__ + ':remove_pdf_all'))
+        self.assertEqual(
+            200, response.status_code,
+            'Expected Response Code 200 received {0} instead.'.format(
+                response.status_code))
         self.assertFalse(response.data['error'])
         self.assertTrue(response.data['removed'])
         self.assertEqual(2, response.data['count'])
         # test create ocred_pdfs
-        response = self.client.get(reverse(__package__+':create_pdf_all'))
+        response = self.client.get(reverse(__package__ + ':create_pdf_all'))
         self.assertFalse(response.data['error'])
         self.assertTrue(response.data['created'])
         self.assertEqual(2, response.data['count'])
@@ -1104,17 +1299,29 @@ class TestAdmin(OcrAdminTestCase):
         :return: None
         """
         # create OCRedFile 1
-        self.ocred_file = self.createOCRedFile(filename='test_eng.png', file_type='image/png')
-        self.assertOCRedFile(self.ocred_file, md5='8aabb1f2d2d92893b5604da701f05505',
-                             text='A some english text to test Tesseract', )
+        self.ocred_file = self.createOCRedFile(filename='test_eng.png',
+                                               file_type='image/png')
+        self.assertOCRedFile(
+            self.ocred_file,
+            md5='8aabb1f2d2d92893b5604da701f05505',
+            text='A some english text to test Tesseract',
+        )
         # create OCRedFile 2
-        self.ocred_file = self.createOCRedFile(filename='test_eng_notext.pdf', file_type='application/pdf')
-        self.assertOCRedFile(self.ocred_file, md5='4ee3751a767b02d072d33424a84457a9',
-                             text='A some english text to test Tesseract', )
+        self.ocred_file = self.createOCRedFile(filename='test_eng_notext.pdf',
+                                               file_type='application/pdf')
+        self.assertOCRedFile(
+            self.ocred_file,
+            md5='4ee3751a767b02d072d33424a84457a9',
+            text='A some english text to test Tesseract',
+        )
         # create OCRedFile 3
-        self.ocred_file = self.createOCRedFile(filename='the_pdf_withtext.pdf', file_type='application/pdf')
-        self.assertOCRedFile(self.ocred_file, md5='55afdb2874e53370a1565776a6bd4ad7',
-                             text='The test if pdf with text', )
+        self.ocred_file = self.createOCRedFile(filename='the_pdf_withtext.pdf',
+                                               file_type='application/pdf')
+        self.assertOCRedFile(
+            self.ocred_file,
+            md5='55afdb2874e53370a1565776a6bd4ad7',
+            text='The test if pdf with text',
+        )
 
     @override_settings(OCR_STORE_FILES=True, OCR_STORE_PDF=True)
     def test_admin(self):
@@ -1128,17 +1335,20 @@ class TestAdmin(OcrAdminTestCase):
         response = self.client.get(reverse('admin:index'))
         self.assertEqual(200, response.status_code)
         self.assertEqual(1, len(response.context_data['app_list']))
-        self.assertEqual(__package__, response.context_data['app_list'][0]['app_label'])
+        self.assertEqual(__package__,
+                         response.context_data['app_list'][0]['app_label'])
 
         # 2. testing /admin/ocr/
-        response = self.client.get(reverse('admin:app_list', kwargs={'app_label': __package__}))
+        response = self.client.get(
+            reverse('admin:app_list', kwargs={'app_label': __package__}))
         self.assertEqual(200, response.status_code)
         html = response.content.decode()
         soup = BeautifulSoup(html, 'html.parser')
         self.assertEqual(1, len(soup.select('tr.model-ocredfile')))
 
         # 3. testing /admin/ocr/ocredfile (OCRedFileList),
-        response = self.client.get(reverse('admin:{}_ocredfile_changelist'.format(__package__)))
+        response = self.client.get(
+            reverse('admin:{}_ocredfile_changelist'.format(__package__)))
         self.assertEqual(200, response.status_code)
         html = response.content.decode()
         soup = BeautifulSoup(html, 'html.parser')
@@ -1147,93 +1357,144 @@ class TestAdmin(OcrAdminTestCase):
         self.assertEqual(3, len(trs))
         # test each tr that it contains a md5
         #    the_pdf_withtext.pdf
-        self.assertEqual('55afdb2874e53370a1565776a6bd4ad7', trs[0].select(':matches(th,td).field-md5 a')[0].text)
+        self.assertEqual('55afdb2874e53370a1565776a6bd4ad7',
+                         trs[0].select(':matches(th,td).field-md5 a')[0].text)
         #    test_eng_notext.pdf
-        self.assertEqual('4ee3751a767b02d072d33424a84457a9', trs[1].select(':matches(th,td).field-md5 a')[0].text)
+        self.assertEqual('4ee3751a767b02d072d33424a84457a9',
+                         trs[1].select(':matches(th,td).field-md5 a')[0].text)
         #    'test_eng.png'
-        self.assertEqual('8aabb1f2d2d92893b5604da701f05505', trs[2].select(':matches(th,td).field-md5 a')[0].text)
+        self.assertEqual('8aabb1f2d2d92893b5604da701f05505',
+                         trs[2].select(':matches(th,td).field-md5 a')[0].text)
         # test each tr filefield_to_listdisplay that it contains the Remove file button
         for tr in trs:
-            self.assertEqual(1, len(tr.select('td.field-filefield_to_listdisplay a.button:contains(Remove)')))
+            self.assertEqual(
+                1,
+                len(
+                    tr.select(
+                        'td.field-filefield_to_listdisplay a.button:contains(Remove)'
+                    )))
         # test trs[0] the_pdf_withtext.pdf must not have ocred_pdf remove button because it was not ocred
-        self.assertEqual(0, len(trs[0].select('td.field-pdffield_to_listdisplay a')))
+        self.assertEqual(
+            0, len(trs[0].select('td.field-pdffield_to_listdisplay a')))
         # test trs[1] test_eng_notext.pdf must have ocred_pdf remove button
-        self.assertEqual(1, len(trs[1].select('td.field-pdffield_to_listdisplay a.button:contains(Remove)')))
+        self.assertEqual(
+            1,
+            len(trs[1].select(
+                'td.field-pdffield_to_listdisplay a.button:contains(Remove)')))
         # test trs[2] test_eng_notext.pdf must have ocred_pdf remove button
-        self.assertEqual(1, len(trs[2].select('td.field-pdffield_to_listdisplay a.button:contains(Remove)')))
+        self.assertEqual(
+            1,
+            len(trs[2].select(
+                'td.field-pdffield_to_listdisplay a.button:contains(Remove)')))
 
         # 3.1 testing remove/create pdf and remove file on /admin/ocr/ocredfile (OCRedFileList) page
         # remove ocred_pdf from the instance of OCRedFile by go to according link for trs[1] (test_eng_notext.pdf)
-        response_remove_ocred_pdf0 = self.client.get(
-            trs[1].select('td.field-pdffield_to_listdisplay a.button:contains(Remove)')[0]['href'], follow=True)
+        response_remove_ocred_pdf0 = self.client.get(trs[1].select(
+            'td.field-pdffield_to_listdisplay a.button:contains(Remove)')[0]
+                                                     ['href'],
+                                                     follow=True)
         self.assertEqual(200, response_remove_ocred_pdf0.status_code)
         html_remove_ocred_pdf0 = response_remove_ocred_pdf0.content.decode()
-        soup_remove_ocred_pdf0 = BeautifulSoup(html_remove_ocred_pdf0, 'html.parser')
+        soup_remove_ocred_pdf0 = BeautifulSoup(html_remove_ocred_pdf0,
+                                               'html.parser')
         # search for the 'PDF removed' message in the messagelist
-        pdf_removed_message0 = soup_remove_ocred_pdf0.select('ul.messagelist li.info:contains(PDF\ removed)')
+        pdf_removed_message0 = soup_remove_ocred_pdf0.select(
+            'ul.messagelist li.info:contains(PDF\ removed)')
         self.assertEqual(1, len(pdf_removed_message0))
-        trs_remove_ocred_pdf0 = soup_remove_ocred_pdf0.select('table#result_list tbody tr')
+        trs_remove_ocred_pdf0 = soup_remove_ocred_pdf0.select(
+            'table#result_list tbody tr')
         self.assertEqual(3, len(trs_remove_ocred_pdf0))
         # looking for 'Removed' and the button 'Create' in trs[1] test_eng_notext.pdf
-        self.assertEqual(1, len(
-            trs_remove_ocred_pdf0[1].select('td.field-pdffield_to_listdisplay:contains(REMOVED) a.button:contains(Create)')))
+        self.assertEqual(
+            1,
+            len(trs_remove_ocred_pdf0[1].select(
+                'td.field-pdffield_to_listdisplay:contains(REMOVED) a.button:contains(Create)'
+            )))
         # testing creation pdf
-        url_create_ocred_pdf0 = trs_remove_ocred_pdf0[1].select('td.field-pdffield_to_listdisplay:contains(REMOVED) a.button:contains(Create)')[0]['href']
-        response_create_ocred_pdf0 = self.client.get(url_create_ocred_pdf0, follow=True)
+        url_create_ocred_pdf0 = trs_remove_ocred_pdf0[1].select(
+            'td.field-pdffield_to_listdisplay:contains(REMOVED) a.button:contains(Create)'
+        )[0]['href']
+        response_create_ocred_pdf0 = self.client.get(url_create_ocred_pdf0,
+                                                     follow=True)
         self.assertEqual(200, response_create_ocred_pdf0.status_code)
         html_create_ocred_pdf0 = response_create_ocred_pdf0.content.decode()
-        soup_create_ocred_pdf0 = BeautifulSoup(html_create_ocred_pdf0, 'html.parser')
+        soup_create_ocred_pdf0 = BeautifulSoup(html_create_ocred_pdf0,
+                                               'html.parser')
         # search for the 'PDF created' message in the messagelist
-        pdf_created_message0 = soup_create_ocred_pdf0.select('ul.messagelist li.info:contains(PDF\ created)')
+        pdf_created_message0 = soup_create_ocred_pdf0.select(
+            'ul.messagelist li.info:contains(PDF\ created)')
         self.assertEqual(1, len(pdf_created_message0))
-        trs_create_ocred_pdf0 = soup_create_ocred_pdf0.select('table#result_list tbody tr')
+        trs_create_ocred_pdf0 = soup_create_ocred_pdf0.select(
+            'table#result_list tbody tr')
         self.assertEqual(3, len(trs_create_ocred_pdf0))
-        self.assertEqual(1, len(trs_create_ocred_pdf0[1].select('td.field-pdffield_to_listdisplay a.button:contains(Remove)')))
+        self.assertEqual(
+            1,
+            len(trs_create_ocred_pdf0[1].select(
+                'td.field-pdffield_to_listdisplay a.button:contains(Remove)')))
         # testing remove file
-        response_remove_file0 = self.client.get(
-            trs[1].select('td.field-filefield_to_listdisplay a.button:contains(Remove)')[0]['href'], follow=True)
+        response_remove_file0 = self.client.get(trs[1].select(
+            'td.field-filefield_to_listdisplay a.button:contains(Remove)')[0]
+                                                ['href'],
+                                                follow=True)
         self.assertEqual(200, response_remove_file0.status_code)
         html_remove_file0 = response_remove_file0.content.decode()
         soup_remove_file0 = BeautifulSoup(html_remove_file0, 'html.parser')
         # search for the 'File removed' message in the messagelist
-        file_removed_message0 = soup_remove_file0.select('ul.messagelist li.info:contains(File\ removed)')
+        file_removed_message0 = soup_remove_file0.select(
+            'ul.messagelist li.info:contains(File\ removed)')
         self.assertEqual(1, len(file_removed_message0))
-        trs_remove_file0 = soup_remove_file0.select('table#result_list tbody tr')
+        trs_remove_file0 = soup_remove_file0.select(
+            'table#result_list tbody tr')
         self.assertEqual(3, len(trs_remove_file0))
         # looking for 'Removed' trs[1] test_eng_notext.pdf
-        self.assertEqual(1, len(
-            trs_remove_file0[1].select(
+        self.assertEqual(
+            1,
+            len(trs_remove_file0[1].select(
                 'td.field-filefield_to_listdisplay:contains(REMOVED)')))
 
         # 3.2  testing remove/create pdf and remove file on trs[2] admin page test_eng.png
-        url_test_eng_png_change = trs[2].select(':matches(th,td).field-md5 a')[0]['href']
+        url_test_eng_png_change = trs[2].select(
+            ':matches(th,td).field-md5 a')[0]['href']
         response_test_eng_png = self.client.get(url_test_eng_png_change)
         self.assertEqual(200, response_test_eng_png.status_code)
         html_test_eng_png = response_test_eng_png.content.decode()
         soup_test_eng_png = BeautifulSoup(html_test_eng_png, 'html.parser')
         # search for a link to downloading file
-        a_download_test_eng_png = soup_test_eng_png.select('a#id_file[target=_blank][href*=download][href*=file]')
-        self.assertEqual(1, len(a_download_test_eng_png))  # checks the downloading file link exists
+        a_download_test_eng_png = soup_test_eng_png.select(
+            'a#id_file[target=_blank][href*=download][href*=file]')
+        self.assertEqual(1, len(a_download_test_eng_png)
+                         )  # checks the downloading file link exists
         # search for a ocred_file.file remove button
-        remove_file_button = soup_test_eng_png.select('a#id_file[target=_blank][href*=download][href*=file] + input[type=submit][value=Remove][name=_removefile]')
-        self.assertEqual(1, len(remove_file_button))  # checks the remove ocred_file.file button exists
+        remove_file_button = soup_test_eng_png.select(
+            'a#id_file[target=_blank][href*=download][href*=file] + input[type=submit][value=Remove][name=_removefile]'
+        )
+        self.assertEqual(1, len(remove_file_button)
+                         )  # checks the remove ocred_file.file button exists
         # test downloading ocred_file.file on the admin page for the test_eng.png using the download file link
-        response_test_eng_png_file = self.client.get(a_download_test_eng_png[0]['href'])
+        response_test_eng_png_file = self.client.get(
+            a_download_test_eng_png[0]['href'])
         self.assertEqual(200, response_test_eng_png_file.status_code)
-        self.assertIn('image/png', response_test_eng_png_file._content_type_for_repr)
+        self.assertIn('image/png',
+                      response_test_eng_png_file._content_type_for_repr)
         # search for a link to downloading pdf
-        a_download_ocred_pdf = soup_test_eng_png.select('a#id_ocred_pdf[target=_blank][href*=download][href*=pdf]')
-        self.assertEqual(1, len(a_download_ocred_pdf))  # checks the downloading pdf link exists
+        a_download_ocred_pdf = soup_test_eng_png.select(
+            'a#id_ocred_pdf[target=_blank][href*=download][href*=pdf]')
+        self.assertEqual(1, len(
+            a_download_ocred_pdf))  # checks the downloading pdf link exists
         # search for an ocred_file.ocred_pdf remove button
-        remove_pdf_button = soup_test_eng_png.select('a#id_ocred_pdf[target=_blank][href*=download][href*=pdf] + input[type=submit][value=Remove][name=_removepdf]')
+        remove_pdf_button = soup_test_eng_png.select(
+            'a#id_ocred_pdf[target=_blank][href*=download][href*=pdf] + input[type=submit][value=Remove][name=_removepdf]'
+        )
         self.assertEqual(1, len(remove_pdf_button))
         # test downloading ocred_file.ocred_pdf on the admin page for the test_eng.png using the download pdf link
         response_ocred_pdf = self.client.get(a_download_ocred_pdf[0]['href'])
         self.assertEqual(200, response_ocred_pdf.status_code)
-        self.assertIn('application/pdf', response_ocred_pdf._content_type_for_repr)
+        self.assertIn('application/pdf',
+                      response_ocred_pdf._content_type_for_repr)
         # getting ocredfile_form data
         #     getting csrfmiddlewaretoken
-        csrfmiddlewaretoken = soup_test_eng_png.select('input[name=csrfmiddlewaretoken]')
+        csrfmiddlewaretoken = soup_test_eng_png.select(
+            'input[name=csrfmiddlewaretoken]')
         self.assertEqual(1, len(csrfmiddlewaretoken))
         csrfmiddlewaretoken = csrfmiddlewaretoken[0]['value']
         #     getting content_type
@@ -1262,18 +1523,25 @@ class TestAdmin(OcrAdminTestCase):
             '_removepdf': 'Remove'
         }
         # make remove ocred_file.ocred_pdf post request
-        response_remove_ocred_pdf = self.client.post(url_test_eng_png_change, data=data_post_remove_pdf, follow=True)
+        response_remove_ocred_pdf = self.client.post(url_test_eng_png_change,
+                                                     data=data_post_remove_pdf,
+                                                     follow=True)
         self.assertEqual(200, response_remove_ocred_pdf.status_code)
         html_remove_ocred_pdf = response_remove_ocred_pdf.content.decode()
-        soup_remove_ocred_pdf = BeautifulSoup(html_remove_ocred_pdf, 'html.parser')
+        soup_remove_ocred_pdf = BeautifulSoup(html_remove_ocred_pdf,
+                                              'html.parser')
         # search for the 'PDF removed' message in the messagelist
-        pdf_removed_message = soup_remove_ocred_pdf.select('ul.messagelist li.info:contains(PDF\ removed)')
+        pdf_removed_message = soup_remove_ocred_pdf.select(
+            'ul.messagelist li.info:contains(PDF\ removed)')
         self.assertEqual(1, len(pdf_removed_message))
         # search for the 'PDF removed' in the field-ocred_pdf
-        pdf_removed_field = soup_remove_ocred_pdf.select('div.field-ocred_pdf span:contains(PDF\ removed)')
+        pdf_removed_field = soup_remove_ocred_pdf.select(
+            'div.field-ocred_pdf span:contains(PDF\ removed)')
         self.assertEqual(1, len(pdf_removed_field))
         # search for the 'Create PDF' button in the field-ocred_pdf
-        pdf_create_button = soup_remove_ocred_pdf.select('div.field-ocred_pdf input[type=submit][value=Create\ PDF][name=_createpdf]')
+        pdf_create_button = soup_remove_ocred_pdf.select(
+            'div.field-ocred_pdf input[type=submit][value=Create\ PDF][name=_createpdf]'
+        )
         self.assertEqual(1, len(pdf_create_button))
         #     post create pdf data
         data_post_create_pdf = {
@@ -1285,19 +1553,25 @@ class TestAdmin(OcrAdminTestCase):
             '_createpdf': 'Create PDF'
         }
         # make create ocred_file.ocred_pdf post request
-        response_create_ocred_pdf = self.client.post(url_test_eng_png_change, data=data_post_create_pdf, follow=True)
+        response_create_ocred_pdf = self.client.post(url_test_eng_png_change,
+                                                     data=data_post_create_pdf,
+                                                     follow=True)
         self.assertEqual(200, response_create_ocred_pdf.status_code)
         html_create_ocred_pdf = response_create_ocred_pdf.content.decode()
-        soup_create_ocred_pdf = BeautifulSoup(html_create_ocred_pdf, 'html.parser')
+        soup_create_ocred_pdf = BeautifulSoup(html_create_ocred_pdf,
+                                              'html.parser')
         # search for the 'PDF created' message in the messagelist
-        pdf_created_message = soup_create_ocred_pdf.select('ul.messagelist li.info:contains(PDF\ created)')
+        pdf_created_message = soup_create_ocred_pdf.select(
+            'ul.messagelist li.info:contains(PDF\ created)')
         self.assertEqual(1, len(pdf_created_message))
         # search for the download OCRedFile.ocred_pdf in the field-ocred_pdf
-        pdf_download_field2 = soup_create_ocred_pdf.select('a#id_ocred_pdf[target=_blank][href*=download][href*=pdf]')
+        pdf_download_field2 = soup_create_ocred_pdf.select(
+            'a#id_ocred_pdf[target=_blank][href*=download][href*=pdf]')
         self.assertEqual(1, len(pdf_download_field2))
         # search for the 'Remove PDF' button in the field-ocred_pdf
         pdf_remove_button2 = soup_create_ocred_pdf.select(
-            'a#id_ocred_pdf[target=_blank][href*=download][href*=pdf] + input[type=submit][value=Remove][name=_removepdf]')
+            'a#id_ocred_pdf[target=_blank][href*=download][href*=pdf] + input[type=submit][value=Remove][name=_removepdf]'
+        )
         self.assertEqual(1, len(pdf_remove_button2))
         #     post remove file data
         data_post_remove_file = {
@@ -1309,15 +1583,19 @@ class TestAdmin(OcrAdminTestCase):
             '_removefile': 'Remove'
         }
         # make remove ocred_file.file post request
-        response_remove_file = self.client.post(url_test_eng_png_change, data=data_post_remove_file, follow=True)
+        response_remove_file = self.client.post(url_test_eng_png_change,
+                                                data=data_post_remove_file,
+                                                follow=True)
         self.assertEqual(200, response_remove_file.status_code)
         html_remove_file = response_remove_file.content.decode()
         soup_remove_file = BeautifulSoup(html_remove_file, 'html.parser')
         # search for the 'File removed' message in the messagelist
-        file_removed_message = soup_remove_file.select('ul.messagelist li.info:contains(File\ removed)')
+        file_removed_message = soup_remove_file.select(
+            'ul.messagelist li.info:contains(File\ removed)')
         self.assertEqual(1, len(file_removed_message))
         # search for the 'File removed' in the field-file
-        file_download_field2 = soup_remove_file.select('div.field-file span:contains(File\ removed)')
+        file_download_field2 = soup_remove_file.select(
+            'div.field-file span:contains(File\ removed)')
         self.assertEqual(1, len(file_download_field2))
 
 
@@ -1334,7 +1612,8 @@ class TestTtl(OcrTestCase):
         Prepares each test 2019-04-14
         :return: None
         """
-        ocred_file = OcrTestCase.createOCRedFile(filename='test_eng.png', file_type='image/png')
+        ocred_file = OcrTestCase.createOCRedFile(filename='test_eng.png',
+                                                 file_type='image/png')
         self.assertOCRedFile(ocred_file,
                              md5='8aabb1f2d2d92893b5604da701f05505',
                              text='A some english text to test Tesseract')
@@ -1374,8 +1653,6 @@ class TestTtl(OcrTestCase):
         self._set_up()
         #
         self.assertEqual(1, self.files_count)
-        ocred_file = OCRedFile.objects.get(id=1)
+        ocred_file = OCRedFile.objects.all()[0]
         self.assertTrue(ocred_file.file_removed)
         self.assertTrue(ocred_file.pdf_removed)
-
-
