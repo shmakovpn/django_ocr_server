@@ -12,6 +12,10 @@ install:
   - pip install -r requirements.txt
   - pip install codecov
   - pip install pytest-cov
-script: coverage run -m pytest django_ocr_server/tests/
+  - django-admin start project ocr_server .
+  - echo "INSTALLED_APPS.append('django_ocr_server')" >> ocr_server/settings.py
+  - python manage.py makemigrations django_ocr_server
+  - python manage.py migrate
+  script: coverage run -m pytest django_ocr_server/tests/
 after_success:
   - codecov
