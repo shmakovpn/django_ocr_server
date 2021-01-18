@@ -213,7 +213,7 @@ def ocr_img2pdf(stdin: bytes) -> bytes:
     return cmd_stdin(TESSERACT_PDFARG, stdin)
 
 
-def pdf_need_ocr(pdf_text):
+def pdf_need_ocr(pdf_text: str) -> bool:
     """
     This function analyses a text of a pdf document and determines whenever pdf document is need to be OCRed or not 2019-03-11
     :param pdf_text: a text of a pdf document
@@ -223,7 +223,7 @@ def pdf_need_ocr(pdf_text):
         return True  # a pdf document does not contain a text. It needs to be OCRed
     if regex.search(r'\p{IsCyrillic}', pdf_text):
         return False  # a pdf document contains cyrillic symbols. It does not need to be OCRed
-    if re.search(r'the', pdf_text, re.IGNORECASE):
+    if re.search(r'the ', pdf_text, re.IGNORECASE):
         return False  # a pdf document contains the 'the' article. It needs to be OCRed
     return True  # a pdf document needs to be OCRed by default
 

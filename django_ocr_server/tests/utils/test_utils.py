@@ -263,6 +263,13 @@ class TestiUtils(TestCase):
         self.assertIsNotNone(test_eng_ocred_pdf)
         test_eng_ocred_pdf_text: str = _u.pdf2text(test_eng_ocred_pdf)
         self.assertEqual(test_eng_ocred_pdf_text, 'A some english text to test Tesseract')
+    
+    def test_pdf_need_ocr(self):
+        """The testing ocr_need_pdf(pdf_text: str)"""
+        self.assertTrue(_u.pdf_need_ocr(''))
+        self.assertFalse(_u.pdf_need_ocr('привет'))
+        self.assertFalse(_u.pdf_need_ocr('the boy and an appple'))
+        self.assertTrue(_u.pdf_need_ocr('ablaldgh'))
 
     def test_ocrmypdf_error_patterns(self):
         """Testing an array of templates to find the error of unmet library dependencies"""
