@@ -24,7 +24,10 @@ PACKAGE_DIR: str = os.path.join(PROJECT_DIR, project)
 sys.path.insert(0, PROJECT_DIR)
 
 # mocking C modules
-autodock_mock_imports: List[str] = ['pdftotext']
+autodock_mock_imports: List[str] = [
+    'django',
+    'pdftotext',
+]
 
 VERSION: str = ''
 with open(os.path.join(PACKAGE_DIR, 'version.py')) as version_file:
