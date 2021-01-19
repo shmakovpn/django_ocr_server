@@ -64,13 +64,6 @@ TTL: int = 0
 """
 Creates folders for storing uploaded files and ocred pdfs if these do not exist
 """
-"""
-2019-10-22 shmakovpn
-files_upload_to = os.path.join(settings.BASE_DIR,
-                               getattr(settings, 'OCR_FILES_UPLOAD_TO', FILES_UPLOAD_TO))
-pdf_upload_to = os.path.join(settings.BASE_DIR,
-                             getattr(settings, 'OCR_PDF_UPLOAD_TO', PDF_UPLOAD_TO))
-"""
 files_upload_to = getattr(settings, 'OCR_FILES_UPLOAD_TO', FILES_UPLOAD_TO)
 if not os.path.isabs(files_upload_to):
     files_upload_to = os.path.join(settings.BASE_DIR, files_upload_to)

@@ -11,21 +11,27 @@ Linux Mint 19 (Ubuntu bionic)
 Installing packages
 
 .. code-block:: shell-session
-
+ 
  $ sudo apt install g++  # need to build pdftotext
  $ sudo apt install libpoppler-cpp-dev  # need to buid pdftotext
 
 Installing tesseract
 
 .. code-block:: shell-session
-
+ 
  $ sudo apt install tesseract-ocr
  $ sudo apt install tesseract-ocr-rus  # install languages you want
+
+Installing ghostscript
+
+.. code-block:: shell-session
+ 
+ $ sudo apt install ghostscript
 
 Installing python3.7
 
 .. code-block:: shell-session
-
+ 
  $ sudo apt install python3.7
  $ sudo apt install python3.7-dev
 
@@ -188,7 +194,7 @@ Install yum-utils
  
  $ sudo yum install yum-utils
 
-Install ghostscipt (Interpreter for PostScript language & PDF needed for ocrmypdf)
+Install ghostscript (Interpreter for PostScript language & PDF needed for ocrmypdf)
 
 .. code-block:: shell-session
  

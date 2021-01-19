@@ -15,7 +15,7 @@ For changing your django_ocr_server behavior you can use
 several parameters in the settings.py of your django project.
 
 | **OCR_STORE_FILES** Set it to True (default) to enable storing uploaded files on the server
-| **OCR_FILE_PREVIEW**  Set it to True (default) to enable showing uploaded images preview in admin interface
+| **OCR_FILE_PREVIEW**  Set it to True (default) to enable showing uploaded images preview in the admin interface
 | **OCR_TESSERACT_LANG** Sets priority of using languages, default to 'rus+eng'
 | **OCR_STORE_PDF** Set it to True (default) to enable storing created searchable PDFs on the server
 | **OCR_FILES_UPLOAD_TO** Sets path for uploaded files

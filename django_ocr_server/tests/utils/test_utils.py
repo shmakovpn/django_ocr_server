@@ -6,26 +6,17 @@ django_ocr_server/tests/utils/test_utils.py
 Author: shmakovpn <shmakovpn@yandex.ru>
 Date: 2021-01-07
 """
-import subprocess
-from typing import List, Match, Pattern, Optional
+from typing import List, Match, Optional
 from django.test import TestCase
 from unittest.mock import patch
 from io import StringIO
-from django.conf import settings
-import django_ocr_server.settings as _s
 import django_ocr_server.utils as _u
 import os
 import pdftotext
 import re
 
 
-class TestiUtils(TestCase):
-    def test_tesseract_lang(self):
-        """Testing TESSERACT_LANG value"""
-        tesseract_lang: str = getattr(settings, 'OCR_TESSERACT_LANG',
-                                      _s.TESSERACT_LANG)
-        self.assertEqual(_u.TESSERACT_LANG, tesseract_lang)
-
+class TestUtils(TestCase):
     def test_read_binary_file(self):
         """Testing read_binary_file(path: str)"""
         tests_dir: str = os.path.dirname(os.path.dirname(__file__))
@@ -214,24 +205,25 @@ class TestiUtils(TestCase):
             self.assertEqual(not_pdf_info.producer, '')
             self.assertEqual(not_pdf_info.title, '')
             self.assertEqual(not_pdf_info.num_pages, 0)
-    
+
     def test_cmd_stdin(self):
         """The testing cmd_stdin(args: List[str], stdin: bytes)"""
         cmd: List[str] = ['cat', '-']
         stdin: bytes = 'hello'.encode()
         result: str = _u.cmd_stdin(cmd, stdin).decode()
         self.assertEqual(result, 'hello')
-        
+
         not_cmd: List[str] = ['nocmdabracadabra']
         try:
             not_result: str = _u.cmd_stdin(not_cmd, stdin=stdin).decode()
-            self.assertNone(f'Execution of "{not_cmd[0]}" does not rised an exception')
+            self.assertNone(
+                f'Execution of "{not_cmd[0]}" does not rised an exception')
         except FileNotFoundError:
             pass
-    
+
     def test_tesseract_strarg(self):
         """The testing TESSERACT_STRARG"""
-        tesseract_lang: str = _u.TESSERACT_LANG
+        tesseract_lang: str = _u.get_tesseract_lang()
         tesseract_strargs: List[str] = _u.TESSERACT_STRARG
         self.assertEqual(tesseract_strargs[0], 'tesseract')
         self.assertEqual(tesseract_strargs[1], '-l')
@@ -239,21 +231,22 @@ class TestiUtils(TestCase):
         self.assertEqual(tesseract_strargs[3], '-')
         self.assertEqual(tesseract_strargs[4], '-')
         self.assertEqual(len(tesseract_strargs), 5)
-    
+
     def test_tesseract_pdfarg(self):
         """The testing TESSERACT_PDFARG"""
         tesseract_pdfarg: List[str] = _u.TESSERACT_PDFARG
         self.assertEqual(len(tesseract_pdfarg), 6)
         self.assertEqual(tesseract_pdfarg[5], 'pdf')
-    
+
     def test_ocr_img2str(self):
         """The testing ocr_img2str(stdin: bytes)"""
         tests_dir: str = os.path.dirname(os.path.dirname(__file__))
         test_eng_png: str = os.path.join(tests_dir, 'test_eng.png')
         test_eng_png_content: bytes = _u.read_binary_file(test_eng_png)
         test_eng_ocred_text: str = _u.ocr_img2str(test_eng_png_content)
-        self.assertTrue(test_eng_ocred_text, 'A some english text to test Tesseract')
-    
+        self.assertTrue(test_eng_ocred_text,
+                        'A some english text to test Tesseract')
+
     def test_ocr_img2pdf(self):
         """The testing ocr_img2pdf(stdin: bytes)"""
         tests_dir: str = os.path.dirname(os.path.dirname(__file__))
@@ -262,8 +255,9 @@ class TestiUtils(TestCase):
         test_eng_ocred_pdf: bytes = _u.ocr_img2pdf(test_eng_png_content)
         self.assertIsNotNone(test_eng_ocred_pdf)
         test_eng_ocred_pdf_text: str = _u.pdf2text(test_eng_ocred_pdf)
-        self.assertEqual(test_eng_ocred_pdf_text, 'A some english text to test Tesseract')
-    
+        self.assertEqual(test_eng_ocred_pdf_text,
+                         'A some english text to test Tesseract')
+
     def test_pdf_need_ocr(self):
         """The testing ocr_need_pdf(pdf_text: str)"""
         self.assertTrue(_u.pdf_need_ocr(''))
@@ -271,16 +265,15 @@ class TestiUtils(TestCase):
         self.assertFalse(_u.pdf_need_ocr('the boy and an appple'))
         self.assertTrue(_u.pdf_need_ocr('ablaldgh'))
 
-    def test_ocrmypdf_error_patterns(self):
-        """Testing an array of templates to find the error of unmet library dependencies"""
-        # At the moment only one version of a dependency error stdout
-        # Thus the list of patterns must contain only one element
-        self.assertEqual(len(_u.OCRMYPDF_DEPENDENCY_ERROR_PATTERNS), 1)
-        # WSL Ubuntu ocrmypdf stderr example
-        stderr_example: str = "Could not find program 'gs' on the PATH"
-        pattern: Pattern = _u.OCRMYPDF_DEPENDENCY_ERROR_PATTERNS[0]
-        match: Optional[Match] = pattern.search(stderr_example)
-        self.assertIsNotNone(match)
-        self.assertNotEqual(match.groups(),
-                            tuple())  # match groups is not an empty tuple
-        self.assertEqual(match.group(1), 'gs')
+    def test_get_ocr_pdf_cmd(self):
+        """Testing get_ocr_pdf_cmd(filename: str)"""
+        args: List[str] = _u.get_ocr_pdf_cmd('Filename')
+        self.assertEqual(len(args), 8)
+        self.assertEqual(args[0], 'ocrmypdf')
+        self.assertEqual(args[1], '-l')
+        self.assertEqual(args[2], _u.get_tesseract_lang())
+        self.assertEqual(args[3], '-')
+        self.assertEqual(args[4], 'Filename')
+        self.assertEqual(args[5], '--force-ocr')
+        self.assertEqual(args[6], '--sidecar')
+        self.assertEqual(args[7], '-')

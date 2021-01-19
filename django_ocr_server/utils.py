@@ -17,11 +17,43 @@ from io import BytesIO  # for conversion a pdf content represented as bytes to a
 import pdftotext  # needed to extraction text from pdf
 import PyPDF2  # needed to get pdfInfo
 from datetime import datetime
-from .settings import TESSERACT_LANG as default_tesseract_lang
+import django_ocr_server.settings as _s
 from django.conf import settings
 
-TESSERACT_LANG: str = getattr(settings, 'OCR_TESSERACT_LANG',
-                              default_tesseract_lang)
+
+def get_store_files() -> bool:
+    """Returns the mode of the storing of uploaded files"""
+    return getattr(settings, 'OCR_STORE_FILES', _s.STORE_FILES)
+
+
+def get_file_preview() -> bool:
+    """Returns display mode of the preview of uploading images in the admin interface"""
+    return getattr(settings, 'OCR_FILE_PREVIEW', _s.FILE_PREVIEW)
+
+
+def get_tesseract_lang() -> str:
+    """Returns the language string for Tesseract"""
+    return getattr(settings, 'OCR_TESSERACT_LANG', _s.TESSERACT_LANG)
+
+
+def get_store_pdf() -> bool:
+    """Returns the mode of the storing of OCRed PDFs"""
+    return getattr(settings, 'OCR_STORE_PDF', _s.STORE_PDF)
+
+
+def get_files_upload_to() -> str:
+    """Returns the path to store uploaded files"""
+    return getattr(settings, 'OCR_FILES_UPLOAD_TO', _s.FILES_UPLOAD_TO)
+
+
+def get_pdf_upload_to() -> str:
+    """Return the path to store OCRed PDFs"""
+    return getattr(settings, 'OCR_PDF_UPLOAD_TO', _s.PDF_UPLOAD_TO)
+
+
+def get_ocr_files_ttl() -> int:
+    """Return the time to live for uploaded files"""
+    return getattr(settings, 'OCR_FILES_TTL', _s.FILES_TTL)
 
 
 def read_binary_file(path: str) -> bytes:
@@ -190,7 +222,7 @@ def cmd_stdin(args: List[str], stdin: bytes) -> bytes:
 TESSERACT_STRARG: List[str] = [
     'tesseract',
     '-l',
-    TESSERACT_LANG,
+    get_tesseract_lang(),
     '-',
     '-',
 ]
@@ -228,10 +260,22 @@ def pdf_need_ocr(pdf_text: str) -> bool:
     return True  # a pdf document needs to be OCRed by default
 
 
-#: The array of regex patterns for searching for a dependency error in ocrmypdf stderr
-OCRMYPDF_DEPENDENCY_ERROR_PATTERNS: List[Pattern] = [
-    re.compile(r"Could not find program '([^']*)' on the PATH"),
-]
+def get_ocr_pdf_cmd(filename: str) -> List[str]:
+    """
+    Returns array of command line arguments,
+    needed to recognize a pdf document using tesseract
+    """
+    args: List[str] = [
+        'ocrmypdf',
+        '-l',
+        get_tesseract_lang(),
+        '-',  # using STDIN
+        filename,  #
+        '--force-ocr',
+        '--sidecar',
+        '-'  # using STDOUT for sidecar
+    ]
+    return args
 
 
 def ocr_pdf(pdf_content: bytes, filename: str) -> str:
@@ -243,23 +287,13 @@ def ocr_pdf(pdf_content: bytes, filename: str) -> str:
     :param filename: the filename of a searchable pdf that will be created
     :return: a recognized text
     """
-    args: List[str] = [
-        'ocrmypdf',
-        '-l',
-        TESSERACT_LANG,
-        '-',  # using STDIN
-        filename,  #
-        '--force-ocr',
-        '--sidecar',
-        '-'  # using STDOUT for sidecar
-    ]
+    args: List[str] = get_ocr_pdf_cmd(filename)
     process: subprocess.Popen = subprocess.Popen(args=args,
                                                  stdout=subprocess.PIPE,
                                                  stderr=subprocess.PIPE,
                                                  stdin=subprocess.PIPE)
     stdout_data, stderr_data = process.communicate(input=pdf_content)
     if process.returncode:
-        # dependency_error_pattern: Pattern =
         raise RuntimeError(
             f"Process '{' '.join(args)}' failed with code {process.returncode}: {stderr_data.decode()}"
         )

@@ -8,7 +8,7 @@ __date__ = "03/10/2019"
 from django.urls import reverse
 from django.core.files import File
 from django.core.files.uploadedfile import SimpleUploadedFile
-from .utils import *
+from django_ocr_server.utils import *
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
@@ -21,7 +21,7 @@ from django.test import Client  # Client to perform test requests
 
 # settings
 from django.conf import settings
-from . import settings as ocr_default_settings
+from django_ocr_server import settings as ocr_default_settings
 
 # rest framework
 from rest_framework.authtoken.models import Token
@@ -32,7 +32,7 @@ from rest_framework.test import APIClient  # Client to perform test requests to 
 from django.contrib.auth.models import User
 
 # views
-from .apiviews import *
+from django_ocr_server.apiviews import *
 
 PWD = os.path.dirname(os.path.realpath(__file__))
 TESTS_DIR = "%s/%s/" % (
