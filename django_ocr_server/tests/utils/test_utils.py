@@ -1,8 +1,6 @@
 """
 django_ocr_server/tests/utils/test_utils.py
 
-
-
 Author: shmakovpn <shmakovpn@yandex.ru>
 Date: 2021-01-07
 """
@@ -277,3 +275,7 @@ class TestUtils(TestCase):
         self.assertEqual(args[5], '--force-ocr')
         self.assertEqual(args[6], '--sidecar')
         self.assertEqual(args[7], '-')
+    
+    def test_ocr_pdf(self):
+        """Testing ocr_pdf(pdf_content, filename)"""
+        tests_dir: str = os.path.dirname(os.path.dirname(__file__))

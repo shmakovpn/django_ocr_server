@@ -5,6 +5,7 @@ This file contains default settings for OCR Server
 __author__ = 'shmakovpn <shmakovpn@yandex.ru>'
 __date__ = '21.02.2019/2019-03-29/2019-04-12'
 
+from datetime import timedelta
 from typing import List
 from django.conf import settings
 import os
@@ -29,38 +30,27 @@ ALLOWED_FILE_TYPES: List[str] = [
     'image/bmp',
     'image/tiff',
 ]
-
 """
 2019-10-22 shmakovpn. An error was found when trying to delpoy Django-OCR_Server using Apache
 because usage of relative paths is a wrong way when Apache mod_wsgi is using
 https://modwsgi.readthedocs.io/en/develop/user-guides/application-issues.html#application-working-directory
 """
 #: directory for saving uploaded files
-FILES_UPLOAD_TO: str = os.path.join(
-    settings.BASE_DIR,
-    __package__,
-    'upload'
-)
+FILES_UPLOAD_TO: str = os.path.join(settings.BASE_DIR, __package__, 'upload')
 
 #: directory for created searchable PDFs
-PDF_UPLOAD_TO: str = os.path.join(
-    settings.BASE_DIR,
-    __package__,
-    'pdf'
-)
-
+PDF_UPLOAD_TO: str = os.path.join(settings.BASE_DIR, __package__, 'pdf')
 """
 TimeToLive settings
 {PARAM_NAME}_TTL = timedelta(..)
-FILES_TTL = 0  # TTL for OCRedFile.files is disabled
-PDF_TTL = 0  # TTL for OCRedFile.ocred_pdfs is disabled
-TTL = 0  # TTL for OCRedFile is disabled
+FILES_TTL = timedelta(0)  # TTL for OCRedFile.files is disabled
+PDF_TTL = timedelta(0) # TTL for OCRedFile.ocred_pdfs is disabled
+TTL = timedelta(0)  # TTL for OCRedFile is disabled
 When current datetime will grater OCRedFile.uploaded+{PARAM}_TTL corresponding object will be removed
 """
-FILES_TTL: int = 0
-PDF_TTL: int = 0
-TTL: int = 0
-
+FILES_TTL: timedelta = timedelta(0)
+PDF_TTL: timedelta = timedelta(0)
+TTL: timedelta = timedelta(0)
 """
 Creates folders for storing uploaded files and ocred pdfs if these do not exist
 """

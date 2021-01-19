@@ -16,7 +16,7 @@ import regex
 from io import BytesIO  # for conversion a pdf content represented as bytes to an inmemory pdf file
 import pdftotext  # needed to extraction text from pdf
 import PyPDF2  # needed to get pdfInfo
-from datetime import datetime
+from datetime import datetime, timedelta
 import django_ocr_server.settings as _s
 from django.conf import settings
 
@@ -51,9 +51,19 @@ def get_pdf_upload_to() -> str:
     return getattr(settings, 'OCR_PDF_UPLOAD_TO', _s.PDF_UPLOAD_TO)
 
 
-def get_ocr_files_ttl() -> int:
+def get_ocr_files_ttl() -> timedelta:
     """Return the time to live for uploaded files"""
     return getattr(settings, 'OCR_FILES_TTL', _s.FILES_TTL)
+
+
+def get_ocr_pdf_ttl() -> timedelta:
+    """Return the time to live for OCRed PDFs"""
+    return getattr(settings, 'OCR_PDF_TTL', _s.PDF_TTL)
+
+
+def get_ocr_ttl() -> timedelta:
+    """Return the time to live both for uploaded files and for OCRed PDFs"""
+    return getattr(settings, 'OCR_TTL', _s.TTL)
 
 
 def read_binary_file(path: str) -> bytes:
