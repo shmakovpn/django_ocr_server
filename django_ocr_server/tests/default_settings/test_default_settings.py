@@ -5,12 +5,12 @@ Author: shmakovpn <shmakovpn@yandex.ru>
 Date: 2021-01-07
 """
 import os
-from django.test import TestCase
+from django.test import SimpleTestCase
 import django_ocr_server.settings as _s
 from django.conf import settings
 
 
-class TestDefaultSettings(TestCase):
+class TestDefaultSettings(SimpleTestCase):
     def test_store_files(self):
         self.assertTrue(_s.STORE_FILES)
 

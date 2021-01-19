@@ -1,5 +1,4 @@
 .. index:: Configuration
-.. index:: OCR_STORE_FILES
 .. index:: OCR_FILE_PREVIEW
 .. index:: OCR_TESSERACT_LANG
 .. index:: OCR_STORE_PDF
@@ -13,6 +12,11 @@ Configuration
 =============
 For changing your django_ocr_server behavior you can use
 several parameters in the settings.py of your django project.
+
+.. index:: OCR_STORE_FILES
+
+.. automodule:: makedoc
+   :members:
 
 | **OCR_STORE_FILES** Set it to True (default) to enable storing uploaded files on the server
 | **OCR_FILE_PREVIEW**  Set it to True (default) to enable showing uploaded images preview in the admin interface

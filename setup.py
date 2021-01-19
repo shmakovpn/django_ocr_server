@@ -1,14 +1,16 @@
 """
 setup.py
+++++++++
+
 django-ocr-server installation script
+
+| Author: shmakovpn <shmakovpn@yandex.ru>
+| Date: 2019-04-16/2021-01-19
 """
-__author__ = 'shmakovpn shmakovpn@yandex.ru'
-__date__ = '2019-04-16'
 
 from setuptools import setup, find_packages
 import os
-import django_ocr_server
-
+from django_ocr_server.version import VERSION
 
 # allow setup.py to be run from any path
 os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
@@ -18,12 +20,13 @@ with open(os.path.join(os.path.dirname(__file__), 'README.rst')) as readme:
 
 setup(
     name='django-ocr-server',
-    version=django_ocr_server.__version__,
+    version=VERSION,
     packages=find_packages(),
     author='shmakovpn',
     author_email='shmakovpn@yandex.ru',
     url='https://github.com/shmakovpn/django_ocr_server',
-    download_url='https://github.com/shmakovpn/django_ocr_server/archive/'+django_ocr_server.__version__+'.zip',
+    download_url=
+    f'https://github.com/shmakovpn/django_ocr_server/archive/{VERSION}.zip',
     # desctiption='Django OCR Server',
     long_description=long_description,
     entry_points={

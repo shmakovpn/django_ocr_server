@@ -8,11 +8,11 @@ Date: 2021-01-11
 """
 import re
 from typing import List, Match, Optional
-from django.test import TestCase
+from django.test import SimpleTestCase
 import subprocess
 
 
-class TestDependencies(TestCase):
+class TestDependencies(SimpleTestCase):
     def test_echo(self):
         """The testing that the *echo* command exists"""
         cmd: List[str] = ['echo', 'hello']

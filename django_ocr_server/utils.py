@@ -1,17 +1,19 @@
 """
 django_ocr_server/utils.py
-this file provides functions and classes of 'OCR' application of 'OCR_Server'
+++++++++++++++++++++++++++
+
+This file provides functions and classes of 'django_ocr_server'
 common for the whole project.
+
+| Author: shmakovpn <shmakovpn@yandex.ru>
+| Date: 2019-03-11/2021-01-19
 """
-__author__ = "shmakovpn <shmakovpn@yandex.ru>"
-__date__ = "03/11/2019"
 
 import os
 import re
 import hashlib  # needed to md5 hash calculation
 import subprocess  # needed to run tesseract
-import re
-from typing import List, Optional, Pattern, Union
+from typing import List, Pattern 
 import regex
 from io import BytesIO  # for conversion a pdf content represented as bytes to an inmemory pdf file
 import pdftotext  # needed to extraction text from pdf

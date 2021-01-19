@@ -1,11 +1,12 @@
 """
 django_ocr_server/tests/utils/test_utils.py
++++++++++++++++++++++++++++++++++++++++++++
 
-Author: shmakovpn <shmakovpn@yandex.ru>
-Date: 2021-01-07
+| Author: shmakovpn <shmakovpn@yandex.ru>
+| Date: 2021-01-07
 """
-from typing import List, Match, Optional
-from django.test import TestCase
+from typing import List, Match, Optional, NewType, Type
+from django.test import SimpleTestCase
 from unittest.mock import patch
 from io import StringIO
 import django_ocr_server.utils as _u
@@ -13,30 +14,31 @@ import os
 import pdftotext
 import re
 
+#: type hint for os.path
+Path: Type = NewType('Path', str)
 
-class TestUtils(TestCase):
+
+class TestUtils(SimpleTestCase):
     def test_read_binary_file(self):
         """Testing read_binary_file(path: str)"""
-        tests_dir: str = os.path.dirname(os.path.dirname(__file__))
-        empty_file: str = os.path.join(tests_dir, 'empty_file.txt')
+        tests_dir: Path = Path(os.path.dirname(os.path.dirname(__file__)))
+        empty_file: Path = Path(os.path.join(tests_dir, 'empty_file.txt'))
         empty_content: bytes = _u.read_binary_file(empty_file)
         self.assertEqual(empty_content, bytes())
-        folder: str = os.path.join(tests_dir, 'some_dir')
-        try:
+        folder: Path = os.path.join(tests_dir, 'some_dir')
+        with self.assertRaisesMessage(
+                IsADirectoryError, f"[Errno 21] Is a directory: '{folder}'"):
             _: bytes = _u.read_binary_file(folder)
-            self.assertIsNone('The directory was readed as a binary file')
-        except IsADirectoryError:
-            pass
-        not_empty_file: str = os.path.join(tests_dir, 'not_empty_file.txt')
+        not_empty_file: Path = Path(
+            os.path.join(tests_dir, 'not_empty_file.txt'))
         not_empty_content: bytes = _u.read_binary_file(not_empty_file)
         self.assertEqual(type(not_empty_content), bytes)
         self.assertEqual(not_empty_content, 'content\n'.encode())
-        no_file: str = os.path.join(tests_dir, 'no_file.txt')
-        try:
+        no_file: Path = Path(os.path.join(tests_dir, 'no_file.txt'))
+        with self.assertRaisesMessage(
+                FileNotFoundError,
+                f"[Errno 2] No such file or directory: '{no_file}'"):
             _: bytes = _u.read_binary_file(no_file)
-            self.assertIsNone('The non existed file was readed')
-        except FileNotFoundError:
-            pass
 
     def test_omp_thread_limit(self):
         """Testing that the environment variable OMP_THREAD_LIMIT equeals to '1' """
@@ -53,22 +55,21 @@ class TestUtils(TestCase):
 
     def test_pdf2text(self):
         """Testing pdf2text(pdf_content: bytes)"""
-        tests_dir: str = os.path.dirname(os.path.dirname(__file__))
-        pdf_notext: str = os.path.join(tests_dir, 'test_eng_notext.pdf')
+        tests_dir: Path = Path(os.path.dirname(os.path.dirname(__file__)))
+        pdf_notext: Path = Path(os.path.join(tests_dir, 'test_eng_notext.pdf'))
         pdf_notext_content: bytes = _u.read_binary_file(pdf_notext)
         pdf_notext_decoded: str = _u.pdf2text(pdf_notext_content)
         self.assertEqual(pdf_notext_decoded, '')
-        pdf_withtext: str = os.path.join(tests_dir, 'the_pdf_withtext.pdf')
+        pdf_withtext: Path = Path(
+            os.path.join(tests_dir, 'the_pdf_withtext.pdf'))
         pdf_withtext_content: bytes = _u.read_binary_file(pdf_withtext)
         pdf_withtext_decoded: str = _u.pdf2text(pdf_withtext_content)
         self.assertEqual(pdf_withtext_decoded, 'The test if pdf with text')
-        not_pdf: str = os.path.join(tests_dir, 'test_eng.png')
+        not_pdf: Path = Path(os.path.join(tests_dir, 'test_eng.png'))
         not_pdf_content: bytes = _u.read_binary_file(not_pdf)
-        try:
+        with self.assertRaisesMessage(pdftotext.Error,
+                                      f'poppler error creating document'):
             _: str = _u.pdf2text(not_pdf_content)
-            self.assertIsNone('pdftotext extracted text from a not PDF file')
-        except pdftotext.Error:
-            pass
 
     def test_date_pattern(self):
         """Testing DATE_PATTERN: Pattern"""
@@ -177,8 +178,8 @@ class TestUtils(TestCase):
 
     def test_get_pdf_info(self):
         """Testing get_pdf_info(pdf_content: bytes)"""
-        tests_dir: str = os.path.dirname(os.path.dirname(__file__))
-        test_eng_pdf: str = os.path.join(tests_dir, 'test_eng.pdf')
+        tests_dir: Path = Path(os.path.dirname(os.path.dirname(__file__)))
+        test_eng_pdf: Path = Path(os.path.join(tests_dir, 'test_eng.pdf'))
         test_eng_pdf_content: bytes = _u.read_binary_file(test_eng_pdf)
         test_eng_pdf_info: _u.PdfInfo = _u.get_pdf_info(test_eng_pdf_content)
         self.assertEqual(test_eng_pdf_info.author, '')
@@ -212,12 +213,10 @@ class TestUtils(TestCase):
         self.assertEqual(result, 'hello')
 
         not_cmd: List[str] = ['nocmdabracadabra']
-        try:
-            not_result: str = _u.cmd_stdin(not_cmd, stdin=stdin).decode()
-            self.assertNone(
-                f'Execution of "{not_cmd[0]}" does not rised an exception')
-        except FileNotFoundError:
-            pass
+        with self.assertRaisesMessage(
+                FileNotFoundError,
+                f"[Errno 2] No such file or directory: '{not_cmd[0]}'"):
+            _: str = _u.cmd_stdin(not_cmd, stdin=stdin).decode()
 
     def test_tesseract_strarg(self):
         """The testing TESSERACT_STRARG"""
@@ -238,8 +237,8 @@ class TestUtils(TestCase):
 
     def test_ocr_img2str(self):
         """The testing ocr_img2str(stdin: bytes)"""
-        tests_dir: str = os.path.dirname(os.path.dirname(__file__))
-        test_eng_png: str = os.path.join(tests_dir, 'test_eng.png')
+        tests_dir: Path = Path(os.path.dirname(os.path.dirname(__file__)))
+        test_eng_png: Path = Path(os.path.join(tests_dir, 'test_eng.png'))
         test_eng_png_content: bytes = _u.read_binary_file(test_eng_png)
         test_eng_ocred_text: str = _u.ocr_img2str(test_eng_png_content)
         self.assertTrue(test_eng_ocred_text,
@@ -247,8 +246,8 @@ class TestUtils(TestCase):
 
     def test_ocr_img2pdf(self):
         """The testing ocr_img2pdf(stdin: bytes)"""
-        tests_dir: str = os.path.dirname(os.path.dirname(__file__))
-        test_eng_png: str = os.path.join(tests_dir, 'test_eng.png')
+        tests_dir: Path = Path(os.path.dirname(os.path.dirname(__file__)))
+        test_eng_png: Path = Path(os.path.join(tests_dir, 'test_eng.png'))
         test_eng_png_content: bytes = _u.read_binary_file(test_eng_png)
         test_eng_ocred_pdf: bytes = _u.ocr_img2pdf(test_eng_png_content)
         self.assertIsNotNone(test_eng_ocred_pdf)
@@ -275,7 +274,7 @@ class TestUtils(TestCase):
         self.assertEqual(args[5], '--force-ocr')
         self.assertEqual(args[6], '--sidecar')
         self.assertEqual(args[7], '-')
-    
+
     def test_ocr_pdf(self):
         """Testing ocr_pdf(pdf_content, filename)"""
-        tests_dir: str = os.path.dirname(os.path.dirname(__file__))
+        tests_dir: Path = Path(os.path.dirname(os.path.dirname(__file__)))

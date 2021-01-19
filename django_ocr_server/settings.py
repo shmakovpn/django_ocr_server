@@ -31,7 +31,7 @@ ALLOWED_FILE_TYPES: List[str] = [
     'image/tiff',
 ]
 """
-2019-10-22 shmakovpn. An error was found when trying to delpoy Django-OCR_Server using Apache
+2019-10-22 shmakovpn. An error was found when trying to deploy Django-OCR_Server using Apache
 because usage of relative paths is a wrong way when Apache mod_wsgi is using
 https://modwsgi.readthedocs.io/en/develop/user-guides/application-issues.html#application-working-directory
 """

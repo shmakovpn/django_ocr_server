@@ -7,13 +7,13 @@ Author: shmakovpn <shmakovpn@yandex.ru>
 Date: 2021-01-19
 """
 from datetime import time, timedelta
-from django.test import TestCase, override_settings
+from django.test import SimpleTestCase, override_settings
 from django.conf import settings
 import django_ocr_server.settings as _s
 import django_ocr_server.utils as _u
 
 
-class TestUtilsSettingsGetters(TestCase):
+class TestUtilsSettingsGetters(SimpleTestCase):
     @override_settings(OCR_STORE_FILES=None)
     def test_get_store_files__not_set(self):
         """Testing get_store_files when no OCR_STORE_FILES"""
