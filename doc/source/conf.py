@@ -22,9 +22,10 @@ DOCS_DIR: str = os.path.dirname(SCRIPT_DIR)
 PROJECT_DIR: str = os.path.dirname(DOCS_DIR)
 PACKAGE_DIR: str = os.path.join(PROJECT_DIR, project)
 sys.path.insert(0, PROJECT_DIR)  # need to import django_ocr_server
-sys.path.insert(
-    0, SCRIPT_DIR
-)  # need to find doc/source/requirements.txt instead of project requirements.txt
+# sys.path.insert(
+#     0, SCRIPT_DIR
+# )  # need to find doc/source/requirements.txt instead of project requirements.txt
+# print(SCRIPT_DIR)
 
 # mocking C modules
 # autodock_mock_imports: List[str] = []
