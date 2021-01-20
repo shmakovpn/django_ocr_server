@@ -21,18 +21,17 @@ SCRIPT_DIR: str = os.path.dirname(os.path.abspath(__file__))
 DOCS_DIR: str = os.path.dirname(SCRIPT_DIR)
 PROJECT_DIR: str = os.path.dirname(DOCS_DIR)
 PACKAGE_DIR: str = os.path.join(PROJECT_DIR, project)
-sys.path.insert(0, PROJECT_DIR)  # need to import django_ocr_server
-# sys.path.insert(
-#     0, SCRIPT_DIR
-# )  # need to find doc/source/requirements.txt instead of project requirements.txt
-# print(SCRIPT_DIR)
+sys.path.insert(0, PROJECT_DIR)  # needed to automodule
+
+from django_ocr_server.version import VERSION
+from django.conf import settings
+if not settings.configured:
+    settings.configure(
+        BASE_DIR=PROJECT_DIR,
+    )
 
 # mocking C modules
 # autodock_mock_imports: List[str] = []
-
-VERSION: str = ''
-with open(os.path.join(PACKAGE_DIR, 'version.py')) as version_file:
-    exec(version_file.read())
 
 # The short X.Y version
 version: str = VERSION
@@ -72,3 +71,7 @@ html_theme: str = 'sphinx_rtd_theme'
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path: List[str] = ['_static']
+
+html_css_files: List[str] = [
+    'custom.css',
+]

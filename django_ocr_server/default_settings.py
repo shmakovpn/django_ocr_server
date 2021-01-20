@@ -1,18 +1,20 @@
 """
 django_ocr_server/settings.py
-This file contains default settings for OCR Server
-"""
-__author__ = 'shmakovpn <shmakovpn@yandex.ru>'
-__date__ = '21.02.2019/2019-03-29/2019-04-12'
++++++++++++++++++++++++++++++
 
+This file contains default settings for OCR Server
+
+| Author: shmakovpn <shmakovpn@yandex.ru>
+| Date: 2019-02-21/2019-03-29/2019-04-12/2021-01-19
+"""
 from datetime import timedelta
 from typing import List
 from django.conf import settings
 import os
 import pathlib
 
-STORE_FILES: bool = True  # store uploaded files or not (True for debug)
-FILE_PREVIEW: bool = True  # show file preview in admin
+STORE_FILES: bool = True  #: store uploaded files (True) or not (False), default to True
+FILE_PREVIEW: bool = True  #: show file preview in admin (True) or not (False), default to True
 TESSERACT_LANG: str = 'rus+eng'  # languages used by tesseract
 STORE_PDF: bool = True  # generate ocred_pdf from uploaded file and store it
 

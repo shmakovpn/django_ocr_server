@@ -15,10 +15,13 @@ several parameters in the settings.py of your django project.
 
 .. index:: OCR_STORE_FILES
 
-.. automodule:: makedoc
-   :members:
+.. py:currentmodule:: django_ocr_server.settings
 
-| **OCR_STORE_FILES** Set it to True (default) to enable storing uploaded files on the server
+.. autodata:: STORE_FILES
+
+.. autodata:: FILE_PREVIEW
+
+| **OCR_STORE_FILES** Set it to True (default) to enable storing uploaded files on the server 1
 | **OCR_FILE_PREVIEW**  Set it to True (default) to enable showing uploaded images preview in the admin interface
 | **OCR_TESSERACT_LANG** Sets priority of using languages, default to 'rus+eng'
 | **OCR_STORE_PDF** Set it to True (default) to enable storing created searchable PDFs on the server
