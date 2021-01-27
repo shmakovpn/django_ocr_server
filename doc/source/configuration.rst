@@ -15,18 +15,35 @@ several parameters in the settings.py of your django project.
 
 .. index:: OCR_STORE_FILES
 
-.. py:currentmodule:: django_ocr_server.settings
+.. py:currentmodule:: django_ocr_server.default_settings
 
-.. autodata:: STORE_FILES
+.. autodata:: OCR_STORE_FILES
 
-.. autodata:: FILE_PREVIEW
+.. autodata:: OCR_FILE_PREVIEW
 
-| **OCR_STORE_FILES** Set it to True (default) to enable storing uploaded files on the server 1
-| **OCR_FILE_PREVIEW**  Set it to True (default) to enable showing uploaded images preview in the admin interface
-| **OCR_TESSERACT_LANG** Sets priority of using languages, default to 'rus+eng'
-| **OCR_STORE_PDF** Set it to True (default) to enable storing created searchable PDFs on the server
-| **OCR_FILES_UPLOAD_TO** Sets path for uploaded files
-| **OCR_PDF_UPLOAD_TO** Sets path for created searchable PDFs
-| **OCR_FILES_TTL** Sets time to live for uploaded files, uploaded files older this interval will be removed. Use python datetime.timedelta to set it or 0 (default) to disable.
-| **OCR_PDF_TTL** Sets time to live for created searchable PDFs, PDFs older this interval will be removed. Use python datetime.timedelta to set it or 0 (default) to disable.
-| **OCR_TTL** Sets time to live for created models of OCRedFile, models older this interval will be removed. Use python datetime.timedelta to set it or 0 (default) to disable.
+.. autodata:: OCR_TESSERACT_LANG
+
+.. autodata:: OCR_STORE_PDF
+
+.. autodata:: OCR_STORE_FILES_DISABLED_LABEL
+
+.. autodata:: OCR_STORE_PDF_DISABLED_LABEL
+
+.. autodata:: OCR_FILE_REMOVED_LABEL
+
+.. autodata:: OCR_PDF_REMOVED_LABEL
+
+.. autodata:: OCR_ALLOWED_FILE_TYPES
+
+.. autodata:: OCR_FILES_UPLOAD_TO
+
+.. autodata:: OCR_PDF_UPLOAD_TO
+
+Time to live settings
++++++++++++++++++++++
+
+.. autodata:: OCR_FILES_TTL
+
+.. autodata:: OCR_PDF_TTL
+
+.. autodata:: OCR_TTL

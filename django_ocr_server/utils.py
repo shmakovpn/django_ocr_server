@@ -6,66 +6,25 @@ This file provides functions and classes of 'django_ocr_server'
 common for the whole project.
 
 | Author: shmakovpn <shmakovpn@yandex.ru>
-| Date: 2019-03-11/2021-01-19
+| Date: 2019-03-11/2021-01-22
 """
-
+# type hints
+from typing import List, Pattern
+# standard
 import os
 import re
+import regex
 import hashlib  # needed to md5 hash calculation
 import subprocess  # needed to run tesseract
-from typing import List, Pattern 
-import regex
 from io import BytesIO  # for conversion a pdf content represented as bytes to an inmemory pdf file
+from datetime import datetime, timedelta
+# dependencies
 import pdftotext  # needed to extraction text from pdf
 import PyPDF2  # needed to get pdfInfo
-from datetime import datetime, timedelta
-import django_ocr_server.settings as _s
+# django
 from django.conf import settings
-
-
-def get_store_files() -> bool:
-    """Returns the mode of the storing of uploaded files"""
-    return getattr(settings, 'OCR_STORE_FILES', _s.STORE_FILES)
-
-
-def get_file_preview() -> bool:
-    """Returns display mode of the preview of uploading images in the admin interface"""
-    return getattr(settings, 'OCR_FILE_PREVIEW', _s.FILE_PREVIEW)
-
-
-def get_tesseract_lang() -> str:
-    """Returns the language string for Tesseract"""
-    return getattr(settings, 'OCR_TESSERACT_LANG', _s.TESSERACT_LANG)
-
-
-def get_store_pdf() -> bool:
-    """Returns the mode of the storing of OCRed PDFs"""
-    return getattr(settings, 'OCR_STORE_PDF', _s.STORE_PDF)
-
-
-def get_files_upload_to() -> str:
-    """Returns the path to store uploaded files"""
-    return getattr(settings, 'OCR_FILES_UPLOAD_TO', _s.FILES_UPLOAD_TO)
-
-
-def get_pdf_upload_to() -> str:
-    """Return the path to store OCRed PDFs"""
-    return getattr(settings, 'OCR_PDF_UPLOAD_TO', _s.PDF_UPLOAD_TO)
-
-
-def get_ocr_files_ttl() -> timedelta:
-    """Return the time to live for uploaded files"""
-    return getattr(settings, 'OCR_FILES_TTL', _s.FILES_TTL)
-
-
-def get_ocr_pdf_ttl() -> timedelta:
-    """Return the time to live for OCRed PDFs"""
-    return getattr(settings, 'OCR_PDF_TTL', _s.PDF_TTL)
-
-
-def get_ocr_ttl() -> timedelta:
-    """Return the time to live both for uploaded files and for OCRed PDFs"""
-    return getattr(settings, 'OCR_TTL', _s.TTL)
+# django_ocr_server
+from django_ocr_server.conf import ocr_settings
 
 
 def read_binary_file(path: str) -> bytes:
@@ -75,7 +34,7 @@ def read_binary_file(path: str) -> bytes:
     :return: contents of the file
     """
     f = open(path, 'rb')
-    content = f.read()
+    content: bytes = f.read()
     f.close()
     return content
 
@@ -231,30 +190,36 @@ def cmd_stdin(args: List[str], stdin: bytes) -> bytes:
     return stdout
 
 
-TESSERACT_STRARG: List[str] = [
-    'tesseract',
-    '-l',
-    get_tesseract_lang(),
-    '-',
-    '-',
-]
-TESSERACT_PDFARG: List[str] = TESSERACT_STRARG + ['pdf']
+def get_tesseract_img_args() -> List[str]:
+    """Creates the command-line argument array to recognize an image from *stdin*"""
+    return [
+        'tesseract',
+        '-l',
+        ocr_settings.OCR_TESSERACT_LANG,
+        '-',
+        '-',
+    ]
+
+
+def get_tesseract_pdf_args() -> List[str]:
+    """Creates the command-line arguments array to recognize a PDF from *stdin*"""
+    return get_tesseract_img_args() + ['pdf']
 
 
 def ocr_img2str(stdin: bytes) -> str:
     """
     Recognize image from 'stdin' to string 2019-03-10 *4597#
     """
-    return cmd_stdin(TESSERACT_STRARG, stdin).decode()
+    return cmd_stdin(get_tesseract_img_args(), stdin).decode()
 
 
 def ocr_img2pdf(stdin: bytes) -> bytes:
     """
     It recognize image from 'stdin' to pdf 2019-03-10
     :param stdin: image as bytes
-    :return: content of recognuzed image as pdf (bytes)
+    :return: content of recognized image as pdf (bytes)
     """
-    return cmd_stdin(TESSERACT_PDFARG, stdin)
+    return cmd_stdin(get_tesseract_pdf_args(), stdin)
 
 
 def pdf_need_ocr(pdf_text: str) -> bool:
@@ -277,17 +242,16 @@ def get_ocr_pdf_cmd(filename: str) -> List[str]:
     Returns array of command line arguments,
     needed to recognize a pdf document using tesseract
     """
-    args: List[str] = [
+    return [
         'ocrmypdf',
         '-l',
-        get_tesseract_lang(),
+        ocr_settings.OCR_TESSERACT_LANG,
         '-',  # using STDIN
         filename,  #
         '--force-ocr',
         '--sidecar',
         '-'  # using STDOUT for sidecar
     ]
-    return args
 
 
 def ocr_pdf(pdf_content: bytes, filename: str) -> str:

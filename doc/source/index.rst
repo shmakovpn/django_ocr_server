@@ -14,6 +14,7 @@ Welcome to django_ocr_server's documentation!
    API documentation <api_documentation>
    Management commands <commands>
    Creation a distribution package <creation_package>
+   developer_guide
 
 
 Indices and tables

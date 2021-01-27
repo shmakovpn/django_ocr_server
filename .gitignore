@@ -43,3 +43,6 @@ node_modules/
 
 # pytest
 .pytest_cache/
+
+# mypy
+.mypy_cache/
