@@ -7,11 +7,13 @@ Testing *ocr_settings: DjangoOcrSettings* from django_ocr_server/conf.py
 | Author: shmakovpn <shmakovpn@yandex.ru>
 | Date: 2021-01-22
 """
-from typing import Callable
+from typing import Callable, Type
 from datetime import timedelta
 from django.test.testcases import SimpleTestCase
 from django.test.utils import override_settings
 from django_ocr_server.conf import ocr_settings
+
+
 
 
 class TestOcrSettings(SimpleTestCase):
@@ -20,9 +22,21 @@ class TestOcrSettings(SimpleTestCase):
         """Testing get_store_files when no OCR_STORE_FILES"""
         print(ocr_settings.OCR_FILE_PREVIEW)
         self.assertTrue(True)
-        reveal_type
+        # reveal_type(TestOcrSettings.test_get_store_files__not_set)
+        _TestClass = Type[SimpleTestCase]
+        print(type(TestOcrSettings.test_get_store_files__not_set))
+        print(type(_TestClass))
+        reveal_type(_TestClass)
+        reveal_type(SimpleTestCase)
         # del settings.OCR_STORE_FILES
         # self.assertEqual(_u.get_store_files(), _s.STORE_FILES)
+
+def hello(self: TestOcrSettings):
+    pass
+
+
+m: Callable[..., None] = hello
+
 
     # @override_settings(OCR_STORE_FILES=True)
     # def test_get_store_files__true(self):
